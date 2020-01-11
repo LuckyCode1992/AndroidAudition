@@ -20,6 +20,13 @@
                     android:text="fun_1_1"
                     style="@style/button_style"/>
             </LinearLayout>
+            <LinearLayout
+                style="@style/layout_style">
+                <Button
+                    android:id="@+id/btn_fun_2_2"
+                    android:text="fun_2_2"
+                    style="@style/button_style"/>
+            </LinearLayout>
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
