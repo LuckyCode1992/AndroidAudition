@@ -4,24 +4,24 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
-
-<androidx.core.widget.NestedScrollView
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <LinearLayout
-        android:orientation="vertical"
+    tools:context=".JavaBasicsActivity">
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <LinearLayout
             android:orientation="vertical"
-           style="@style/layout_style">
-            <Button
-                android:id="@+id/btn_java_basics"
-                android:text=" java基础面试知识点"
-               style="@style/button_style"/>
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <LinearLayout
+               style="@style/layout_style">
+                <Button
+                    android:id="@+id/btn_fun_1_1"
+                    android:text="fun_1_1"
+                    style="@style/button_style"/>
+            </LinearLayout>
+
         </LinearLayout>
-    </LinearLayout>
-</androidx.core.widget.NestedScrollView>
+    </androidx.core.widget.NestedScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
