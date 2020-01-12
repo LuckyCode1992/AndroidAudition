@@ -100,6 +100,27 @@ public class JavaBasicsActivity extends AppCompatActivity {
          *              - 如果一个对象与虚引用关联，则跟没有引用与之关联一样，在任何时候都可能被垃圾回收器回收。
          */
 
+        /**
+         * 3.int与integer的区别
+         *      - Integer是int的包装类；int是基本数据类型；
+         *      - Integer变量必须实例化后才能使用；int变量不需要；
+         *      - Integer实际是对象的引用，指向此new的Integer对象；int是直接存储数据值 ；
+         *      - Integer的默认值是null；int的默认值是0。
+         *      - 泛型不支持int，但是支持Integer
+         *      - int 存储在栈中，Integer 对象的引用存储在栈空间中，对象的数据存储在堆空间中。
+         *      1.自动装箱和自动拆箱(8种基本类型才有)
+         *          1.1 自动装箱：将基本数据类型重新转化为对象： Integer num = 1;
+         *          1.2 自动拆箱：将对象重新转化为基本数据类型： Integer integer = 1; int a = integer+5;
+         *          1.3 相同值下的 int 和 Integer 的比较结果 见例子 fun_3_1_1
+         *              - 两个通过new生成的变量,是创建两个对象的比较
+         *              - int 和 Integer 的值比较,Integer会自动拆箱为int类型，然后再做比较，实际上就变为两个int变量的比较
+         *              - new 生成的Integer变量 和 非new 生成的Integer变量比较，new 生成的Integer变量的值在堆空间中，
+         *                非new 生成的Integer变量的值在在常量池中
+         *              - 对于两个非new生成的Integer对象，进行比较时，如果两个变量的值在区间-128到127之间，则比较结果为true，
+         *                如果两个变量的值不在此区间，则比较结果为false
+         *              - 非new生成的Integer变量，会先判断常量池中是否有该对象，若有则共享，若无则在常量池中放入该对象；这也叫享元模式
+         */
+
 
         findViewById(R.id.btn_fun_1_1).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -113,10 +134,34 @@ public class JavaBasicsActivity extends AppCompatActivity {
                 fun_2_2();
             }
         });
+        findViewById(R.id.btn_fun_3_1).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fun_3_1();
+            }
+        });
+    }
+
+    void fun_3_1() {
+        Integer i1 = new Integer(3);
+        Integer i2 = new Integer(3);
+        Integer i3 = Integer.valueOf(3);
+        Integer i4 = 3;
+        int i5 = 3;
+        Integer i6 = 3;
+        Integer i7 = 128;
+        Integer i8 = 128;
+        Log.d("fun_3_1", "i1==i2:" + (i1 == i2));
+        Log.d("fun_3_1", "i1==i3:" + (i1 == i3));
+        Log.d("fun_3_1", "i1==i4:" + (i1 == i4));
+        Log.d("fun_3_1", "i1==i5:" + (i1 == i5));
+        Log.d("fun_3_1", "i4==i6:" + (i4 == i6));
+        Log.d("fun_3_1", "i7==i8:" + (i7 == i8));
+
     }
 
 
-    void fun_2_2(){
+    void fun_2_2() {
         SoftReference<String> softReference = new SoftReference<String>(new String("hello"));
         System.out.println(softReference.get());
         System.gc();
