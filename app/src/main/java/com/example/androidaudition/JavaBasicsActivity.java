@@ -3,6 +3,7 @@ package com.example.androidaudition;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.provider.CalendarContract;
 import android.util.Log;
 import android.view.View;
 
@@ -274,7 +275,7 @@ public class JavaBasicsActivity extends AppCompatActivity {
 
         /**
          *  9 抽象类和接口
-         *      9.1 什么事抽象类和接口
+         *      9.1 什么是抽象类和接口
          *          9.1.1 抽象类
          *              - abstract 修饰的类
          *              - 抽象类的特点：
@@ -292,7 +293,44 @@ public class JavaBasicsActivity extends AppCompatActivity {
          *                  - 实现接口的非抽象类必须实现接口所有方法，抽象类可以部分实现
          *                  - 接口不能直接创建对象，但可以申明一个接口变量，方便调用
          *                  - 完全解耦，可以编写可复用性更好的代码
+         *       9.2 接口和抽象类的不同
+         *          - 抽象层次不同
+         *              - 抽象类是对类抽象，接口是对行为抽象
+         *              - 抽象类是对整个类整体进行抽象，包括属性，行为，但接口却是对类局部行为进行抽象
+         *          - 跨域不同
+         *              - 抽象类所跨域的是具有相似特点的类，而接口却可以跨域不同的类
+         *              - 抽象类所体现的一种继承关系，考虑的是子类和父类本质"是不是"同一类的关系
+         *              - 接口不要求实现类和接口是同一本质，它们之间只存在"有没有这个能力"的关系
+         *          - 设计层次不同
+         *              - 抽象类是自下而上的设计，子类中重复出现的工作，抽象到抽象类中
+         *              - 接口是自上而下，定义行为和规范
+         *       9.3 如何选择抽象类还是接口
+         *          - 只有必须使用方法定义或者成员变量的时候，才考虑使用抽象类
+         *          - 其他情况，都应该优先使用接口。接口可以多实现，更灵活，抽象类，只能单继承。
          *
+         *
+         */
+
+        /**
+         *  10 java泛型
+         *      10.1 泛型是什么
+         *          - List<String> list=new ArrayList<>();
+         *          - ArrayList 就是一个泛型。泛型，就是泛指的意思。设定一个数据类型，避免出现运行时数据转型错误。
+         *      10.2 泛型介绍
+         *          10.2.1 java泛型类
+         *              - 类结构是面向对象中最基本的元素，如果我们需要类具有很好的扩展性，那么我们可以将其设置为泛型的
+         *              - 见类 DataHolder
+         *          10.2.2 java泛型方法
+         *              - 如果使用泛型方法可以解决问题，那么应该尽量使用泛型方法
+         *              - 见 DataHolder
+         *              - 泛型方法的基本特征：
+         *                  - public 和 返回值中间（<T>）非常重要,可以理解为声明此方法为泛型方法： public <T> void xx(T t){}
+         *                  - 只要声明了的方法才是泛型方法，泛型类中的使用泛型的成员方法并不是泛型方法
+         *                  - 表明该方法将使用泛型类型T，此时才可以在方法中使用泛型类型T
+         *                  - 与泛型类的定义一样，此时T可以随便写为任意标识，常见的如T,E,K等形式
+         *          10.2.3 java泛型接口
+         *          10.2.4 java泛型擦除及相关内容
+         *          10.2.5 java泛型通配符（extends 和 supper）
          */
 
 
@@ -362,23 +400,23 @@ public class JavaBasicsActivity extends AppCompatActivity {
 
 class A {
     int a;
-    int c= 10;
+    int c = 10;
     private String b;
 
     void fun1() {
     }
 
     private void fun2() {
-        final int  d = 10;
-         class C {
-            void  c(){
-              int ee = d+10;
-              int ff = a;
+        final int d = 10;
+        class C {
+            void c() {
+                int ee = d + 10;
+                int ff = a;
             }
         }
     }
 
-   public class B {
+    public class B {
         void xx() {
             a = 10;
             b = "sss";
@@ -388,6 +426,28 @@ class A {
     }
 }
 
-abstract class AB{
+abstract class AB {
+
+}
+
+class DD extends AB {
+
+}
+
+class DataHolder<T> {
+    public T getItem() {
+        return item;
+    }
+
+    public void setItem(T item) {
+        this.item = item;
+        printInfo(item);
+    }
+
+    T item;
+
+    public <E> void printInfo(E e) {
+        System.out.println(e);
+    }
 
 }
