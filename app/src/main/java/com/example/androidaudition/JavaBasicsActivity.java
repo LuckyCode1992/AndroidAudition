@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.provider.CalendarContract;
+import android.text.Editable;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -351,6 +352,12 @@ public class JavaBasicsActivity extends AppCompatActivity {
          *              - 例子见 fun_10_2_5()
          */
 
+        /**
+         *  11 父类的静态方法能否被子类重写
+         *      - 不能
+         *      - 静态方法的调用方式，是类.方法。
+         */
+
 
         findViewById(R.id.btn_fun_1_1).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -391,16 +398,28 @@ public class JavaBasicsActivity extends AppCompatActivity {
         findViewById(R.id.fun_10_2_5).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                fun_10_2_5();
+                //fun_10_2_5();
             }
         });
+        findViewById(R.id.fun_11_1).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fun_11();
+            }
+        });
+    }
+
+    void fun_11() {
+
+        Son.fun();
+        Father.fun();
     }
 
     void fun_10_2_5() {
         List<TextView> textViews = new ArrayList<>();
         // java 为了保证类型擦除中的类型安全，添加了这种限制，子类泛型类型对象不能 赋值 给父类的泛型类型声明
 //        List<TextView> textViews1 = new ArrayList<Button>();
-        List< ? extends TextView> textViews1 = new ArrayList<Button>();
+        List<? extends TextView> textViews1 = new ArrayList<Button>();
         // 不允许修改和赋值，但允许获取
         // 上界通配符的应用 扩大 变量或参数的接收范围
         print(new Button(this));
@@ -417,13 +436,15 @@ public class JavaBasicsActivity extends AppCompatActivity {
 
     }
 
-    void addTextiew(List<? super Button> buttons){
+    void addTextiew(List<? super Button> buttons) {
 
     }
-    void print(TextView tv){
-       System.out.println(tv.getText());
+
+    void print(TextView tv) {
+        System.out.println(tv.getText());
     }
-    void prints(List<? extends TextView> textViews){
+
+    void prints(List<? extends TextView> textViews) {
 
     }
 
@@ -623,3 +644,14 @@ class IntegerFactory implements Factory<Integer> {
     }
 }
 
+class Father {
+    static void fun() {
+        System.out.println("父类方法");
+    }
+}
+
+class Son extends Father {
+    static void fun() {
+        System.out.println("子类方法");
+    }
+}
