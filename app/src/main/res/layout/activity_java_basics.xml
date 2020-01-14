@@ -34,6 +34,34 @@
                     android:text="fun_3_1"
                     style="@style/button_style"/>
             </LinearLayout>
+            <LinearLayout
+                style="@style/layout_style">
+                <Button
+                    android:id="@+id/btn_fun_10_2"
+                    android:text="fun_10_2"
+                    style="@style/button_style"/>
+            </LinearLayout>
+            <LinearLayout
+                style="@style/layout_style">
+                <Button
+                    android:id="@+id/fun_10_2_4_1"
+                    android:text="fun_10_2_4_1"
+                    style="@style/button_style"/>
+            </LinearLayout>
+            <LinearLayout
+                style="@style/layout_style">
+                <Button
+                    android:id="@+id/fun_10_2_4_2"
+                    android:text="fun_10_2_4_2"
+                    style="@style/button_style"/>
+            </LinearLayout>
+            <LinearLayout
+                style="@style/layout_style">
+                <Button
+                    android:id="@+id/fun_10_2_5"
+                    android:text="fun_10_2_5"
+                    style="@style/button_style"/>
+            </LinearLayout>
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

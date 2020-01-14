@@ -6,9 +6,13 @@ import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 
 import java.lang.ref.SoftReference;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
 
 public class JavaBasicsActivity extends AppCompatActivity {
 
@@ -329,8 +333,22 @@ public class JavaBasicsActivity extends AppCompatActivity {
          *                  - 表明该方法将使用泛型类型T，此时才可以在方法中使用泛型类型T
          *                  - 与泛型类的定义一样，此时T可以随便写为任意标识，常见的如T,E,K等形式
          *          10.2.3 java泛型接口
+         *              - 泛型接口例子 见 Generator
          *          10.2.4 java泛型擦除及相关内容
-         *          10.2.5 java泛型通配符（extends 和 supper）
+         *              - 类型擦除例子 见 fun_10_2_4
+         *              - 编译器虽然会在编译过程中移除参数的类型信息，但是会保证类或方法内部参数类型的一致性。
+         *              - 泛型参数将会被擦除到它的第一个边界（边界可以有多个，重用 extends 关键字，通过它能给参数类型添加一个边界）见 ManiPulator
+         *              - 为了“还原”返回结果的类型，编译器在get之后添加了类型转换。它是编译器自动帮我们加进去的。
+         *              10.2.4.1 java泛型擦除的缺陷和补救措施
+         *                 -缺陷： 泛型类型不能显式地运用在运行时类型的操作当中，例如：转型、instanceof 和 new。因为在运行时，所有参数的类型信息都丢失了。
+         *                 - 补救：
+         *                      - 类型判断问题（instanceof 问题） 见GenericType 见方法 fun_10_2_4_1()
+         *                      - 创建类型实例(new 问题)
+         *                          - 泛型代码中不能new T()的原因有两个，一是因为擦除，不能确定类型；二是无法确定T是否包含无参构造函数。
+         *                          - 解决方法，见 Factory 方法 fun_10_2_4_2()
+         *                          - 不建议使用泛型数组，所以就用ArrayList 代替。
+         *          10.2.5 java泛型通配符（? extends T 和 ? supper T ）
+         *              - 例子见 fun_10_2_5()
          */
 
 
@@ -352,6 +370,87 @@ public class JavaBasicsActivity extends AppCompatActivity {
                 fun_3_1();
             }
         });
+        findViewById(R.id.btn_fun_10_2).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fun_10_2_4();
+            }
+        });
+        findViewById(R.id.fun_10_2_4_1).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fun_10_2_4_1();
+            }
+        });
+        findViewById(R.id.fun_10_2_4_2).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fun_10_2_4_2();
+            }
+        });
+        findViewById(R.id.fun_10_2_5).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fun_10_2_5();
+            }
+        });
+    }
+
+    void fun_10_2_5() {
+        List<TextView> textViews = new ArrayList<>();
+        // java 为了保证类型擦除中的类型安全，添加了这种限制，子类泛型类型对象不能 赋值 给父类的泛型类型声明
+//        List<TextView> textViews1 = new ArrayList<Button>();
+        List< ? extends TextView> textViews1 = new ArrayList<Button>();
+        // 不允许修改和赋值，但允许获取
+        // 上界通配符的应用 扩大 变量或参数的接收范围
+        print(new Button(this));
+        prints(textViews);
+        List<Button> buttons = new ArrayList<>();
+        prints(buttons);
+
+        //下界通配符
+        // 只能修改不能使用 可以set不能get
+        List<? super Button> buttonList = new ArrayList<TextView>();
+        List<TextView> textViews2 = new ArrayList<>();
+        addTextiew(textViews2);
+
+
+    }
+
+    void addTextiew(List<? super Button> buttons){
+
+    }
+    void print(TextView tv){
+       System.out.println(tv.getText());
+    }
+    void prints(List<? extends TextView> textViews){
+
+    }
+
+    void fun_10_2_4_2() {
+        Create<Integer> create = new Create<>();
+        create.newInstance(new IntegerFactory());
+        System.out.println(create);
+        System.out.println(create.instance);
+    }
+
+    void fun_10_2_4_1() {
+        GenericType<A> genericType = new GenericType<>(A.class);
+        System.out.println(genericType.isInstance(new A()));
+        System.out.println(genericType.isInstance(new DD()));
+    }
+
+    void fun_10_2_4() {
+        Class<?> class1 = new ArrayList<String>().getClass();
+        Class<?> class2 = new ArrayList<Integer>().getClass();
+        System.out.println(class1);
+        System.out.println(class2);
+        System.out.println(class1.equals(class2));
+        A a1 = new A();
+        A a2 = new A();
+        System.out.println(a1 == a2);
+        System.out.println(a1.equals(a2));
+
     }
 
     void fun_3_1() {
@@ -451,3 +550,76 @@ class DataHolder<T> {
     }
 
 }
+
+interface Generator<T> {
+    T next();
+}
+
+class FruitGenerator<T> implements Generator<T> {
+
+    @Override
+    public T next() {
+        return null;
+    }
+}
+
+interface Hasf {
+    void f();
+}
+
+class ManiPulator<T extends Hasf> {
+    T obj;
+
+    public T getObj() {
+        return obj;
+    }
+
+    public void setObj(T obj) {
+        this.obj = obj;
+    }
+}
+
+/**
+ * 解决泛型类型判断 问题 （instanceof 问题）
+ *
+ * @param <T>
+ */
+class GenericType<T> {
+    Class<?> classType;
+
+    public GenericType(Class<?> classType) {
+        this.classType = classType;
+    }
+
+    public boolean isInstance(Object object) {
+        return classType.isInstance(object);
+    }
+}
+
+/**
+ * 使用工厂方法创建实例，解决 泛型无法 new 的问题
+ *
+ * @param <T>
+ */
+interface Factory<T> {
+    T create();
+}
+
+class Create<T> {
+    T instance;
+
+    public <F extends Factory<T>> T newInstance(F f) {
+        instance = f.create();
+        return instance;
+    }
+}
+
+class IntegerFactory implements Factory<Integer> {
+
+    @Override
+    public Integer create() {
+        Integer integer = new Integer(9);
+        return integer;
+    }
+}
+
