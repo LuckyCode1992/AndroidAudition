@@ -357,6 +357,7 @@ public class JavaBasicsActivity extends AppCompatActivity {
          *      - 不能
          *      - 静态方法的调用方式，是类.方法。
          */
+        
 
 
         findViewById(R.id.btn_fun_1_1).setOnClickListener(new View.OnClickListener() {

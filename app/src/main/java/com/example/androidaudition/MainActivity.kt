@@ -16,5 +16,13 @@ class MainActivity : AppCompatActivity() {
             intent.setClass(this,JavaBasicsActivity::class.java)
             startActivity(intent)
         }
+        btn_android_basics.setOnClickListener {
+            intent.setClass(this,AndroidBasicActivity::class.java)
+            startActivity(intent)
+        }
+        btn_data_structure.setOnClickListener {
+            intent.setClass(this,DataStructureActivity::class.java)
+            startActivity(intent)
+        }
     }
 }

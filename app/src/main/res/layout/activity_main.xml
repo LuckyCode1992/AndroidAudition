@@ -21,6 +21,24 @@
                 android:text=" java基础面试知识点"
                style="@style/button_style"/>
         </LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            style="@style/layout_style">
+            <Button
+                android:id="@+id/btn_data_structure"
+                android:text=" 数据结构 "
+                style="@style/button_style"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            style="@style/layout_style">
+            <Button
+                android:id="@+id/btn_android_basics"
+                android:text=" android基础面试知识点"
+                style="@style/button_style"/>
+        </LinearLayout>
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>
 
