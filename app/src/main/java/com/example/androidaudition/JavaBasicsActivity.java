@@ -357,7 +357,39 @@ public class JavaBasicsActivity extends AppCompatActivity {
          *      - 不能
          *      - 静态方法的调用方式，是类.方法。
          */
-        
+
+        /**
+         * 12 Java中final,finalize和finally的区别
+         *      - final 用于修饰 类，方法，变量
+         *          - final关键字用于基本数据类型前：这时表明该关键字修饰的变量是一个常量，在定义后该变量的值就不能被修改
+         *          - final关键字用于方法声明前：这时意味着该方法时最终方法，只能被调用，不能被覆盖，但是可以被重载。
+         *          - final关键字用于类名前：此时该类被称为最终类，该类不能被其他类继承。
+         *      - finalize方法来自于java.lang.Object，用于回收资源。
+         *      - finally 常用与 try catch场景。通常在会后一定要执行的地方，就使用，比如，关闭文件流。
+         */
+
+        /**
+         *  13 序列化：
+         *      - 序列化是将对象的状态信息转换为可以存储或传输的形式的过程
+         *      - 序列化的方式：json，xml文件。还有Serializable，Parcelable
+         *      13.1 Serializable：
+         *          - 表示将一个对象转换成可存储或可传输的状态。序列化后的对象可以在网络上进行传输，也可以存储到本地。
+         *          - Serializable的特点：
+         *              - 可序列化类中，未实现 Serializable 的属性状态无法被序列化/反序列化
+         *              - 反序列化一个类的过程中，它的非可序列化的属性将会调用无参构造函数重新创建
+         *              - 这个属性的无参构造函数必须可以访问，否者运行时会报错
+         *              - 一个实现序列化的类，它的子类也是可序列化的
+         *      13.2 Parcelable：
+         *          - 将一个完整的对象进行分解， 而分解后的每一部分都是Intent所支持的数据类型，这样也就实现传递对象的功能。
+         *          - Parcelable的作用：
+         *              - 永久性保存对象，保存对象的字节序列到本地文件中
+         *              - 通过序列化对象在网络中传递对象
+         *              - 通过序列化在进程间传递对象
+         *      13.3 Parcelable和Serializable之间的区别：
+         *          - Serializable使用IO读写存储在硬盘上，Parcelable是直接在内存中读写
+         *          - Parcelable的效率比Serializable 高
+         *          - Serializable序列化过程使用了反射技术，并且期间产生临时对象，容易触发垃圾回收
+         */
 
 
         findViewById(R.id.btn_fun_1_1).setOnClickListener(new View.OnClickListener() {
