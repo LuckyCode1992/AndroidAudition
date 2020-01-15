@@ -43,6 +43,14 @@ public class DataStructureActivity extends AppCompatActivity {
          *                          我们知道第一遍选择第一个元素5会和2交换，那么原序列中2个5的相对位置前后顺序就破坏了）。
          */
 
+        /**
+         *  2 二分查找/折半查找
+         *      - 条件： 有序数列
+         *      - 先找最中间的元素 n/2的位置
+         *      - 判断与中间的数的的大小关系
+         *      - 再找中间的数，重复。
+         */
+
         findViewById(R.id.btn_fun_1_1).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -55,6 +63,40 @@ public class DataStructureActivity extends AppCompatActivity {
                 fun_1_2();
             }
         });
+        findViewById(R.id.btn_fun_2_1).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fun_2_1();
+            }
+        });
+    }
+
+    void fun_2_1(){
+        int arr[] = {12,33,55,66,78,87,90,111,123,135,158};
+        int len = arr.length;
+        //定义 最小值，最大值，中间值的下标
+        int min = 0;
+        int max = len-1;
+        int mid = len/2;
+        int key = 112;
+
+        while (min<max){
+            //判断大小
+            if(arr[mid]>key){
+                //说明在左边
+                max = mid-1;
+            }else if(arr[mid]<key) {
+                //表明在右边
+                min = mid+1;
+            }
+            mid =  (min+max)/2;
+        }
+        if (key == arr[mid]){
+            System.out.println("key="+key+"在"+mid);
+        }else {
+            System.out.println("没有这个数字");
+        }
+
     }
 
     void fun_1_1() {
