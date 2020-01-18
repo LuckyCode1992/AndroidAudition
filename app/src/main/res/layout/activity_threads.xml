@@ -16,24 +16,11 @@
             <LinearLayout
                 style="@style/layout_style">
                 <Button
-                    android:id="@+id/btn_fun_1_1"
-                    android:text="fun_1_1"
+                    android:id="@+id/btn_fun_thread_way"
+                    android:text="线程的创建方式"
                     style="@style/button_style"/>
             </LinearLayout>
-            <LinearLayout
-                style="@style/layout_style">
-                <Button
-                    android:id="@+id/btn_fun_1_2"
-                    android:text="fun_1_2"
-                    style="@style/button_style"/>
-            </LinearLayout>
-            <LinearLayout
-                style="@style/layout_style">
-                <Button
-                    android:id="@+id/btn_fun_2_1"
-                    android:text="fun_2_1"
-                    style="@style/button_style"/>
-            </LinearLayout>
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>
