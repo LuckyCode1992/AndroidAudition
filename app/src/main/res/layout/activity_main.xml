@@ -39,6 +39,14 @@
                 android:text=" android基础面试知识点"
                 style="@style/button_style"/>
         </LinearLayout>
+        <LinearLayout
+            android:orientation="vertical"
+            style="@style/layout_style">
+            <Button
+                android:id="@+id/btn_threads"
+                android:text=" 线程、多线程和线程池 "
+                style="@style/button_style"/>
+        </LinearLayout>
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>
 

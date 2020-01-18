@@ -24,5 +24,10 @@ class MainActivity : AppCompatActivity() {
             intent.setClass(this,DataStructureActivity::class.java)
             startActivity(intent)
         }
+        btn_threads.setOnClickListener {
+            intent.setClass(this,ThreadsActivity::class.java)
+            startActivity(intent)
+        }
+
     }
 }
