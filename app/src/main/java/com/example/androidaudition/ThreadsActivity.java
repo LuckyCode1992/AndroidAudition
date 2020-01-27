@@ -64,6 +64,22 @@ public class ThreadsActivity extends AppCompatActivity {
          *      - 见方法 semaphoreTest
          */
 
+        /**
+         *  5. Java中wait和seelp方法的不同
+         *      - sleep()方法是Thread的方法
+         *      - wait()方法是Object的方法
+         *      - sleep方法没有释放锁，而wait方法释放了锁
+         *      - wait，notify和notifyAll只能在同步控制方法或者同步控制块里面使用，而sleep可以在任何地方使用(使用范围)
+         *      - sleep必须捕获异常，而wait，notify和notifyAll不需要捕获异常
+         *          - 在sleep的过程中过程中有可能被其他对象调用它的interrupt(),产生InterruptedException异常，
+         *            如果你的程序不捕获这个异常，线程就会异常终止，进入TERMINATED状态
+         *      - 注意sleep()方法是一个静态方法，也就是说他只对当前对象有效，
+         *        通过t.sleep()让t对象进入sleep，这样的做法是错误的，它只会是使当前线程被sleep 而不是t线程
+         *      -  wait属于Object的成员方法，一旦一个对象调用了wait方法，必须要采用notify()和notifyAll()方法唤醒该进程;
+         *         如果线程拥有某个或某些对象的同步锁，那么在调用了wait()后，这个线程就会释放它持有的所有同步资源，
+         *         而不限于这个被调用了wait()方法的对象。wait()方法也同样会在wait的过程中有可能被其他对象调用interrupt()方法而产生
+         */
+
 
 
         findViewById(R.id.btn_fun_thread_way).setOnClickListener(new View.OnClickListener() {
