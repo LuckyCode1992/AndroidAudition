@@ -114,6 +114,17 @@ public class ThreadsActivity extends AppCompatActivity {
          *      - 4.线程执行某些IO操作，因为等待相关的资源而进入了阻塞状态。比如说监听system.in，但是尚且没有收到键盘的输入，则进入阻塞状态。
          */
 
+        /**
+         *  8.线程的关闭
+         *      - 1.设置退出标志，使线程正常退出，正常地退出run()方法后线程结束。（最佳）
+         *          - 比如 public volatile boolean exit = false
+         *      - 2.使用interrupt()方法终止线程。
+         *          - interrupt()方法并不会立即执行中断操作，而是资源释放后停止。会抛出异常。
+         *      - 3.使用stop方法强制终止线程（不推荐使用）
+         *          - stop()方法太过于暴力，会把执行到一半的线程给终止了，这样线程线程资源的释放就得不到保证。
+         *            通常是没有给与线程完成资源释放工作的机会，因此会导致程序工作在不确定的状态下。
+         */
+
 
 
         findViewById(R.id.btn_fun_thread_way).setOnClickListener(new View.OnClickListener() {
