@@ -65,7 +65,7 @@ public class ThreadsActivity extends AppCompatActivity {
          */
 
         /**
-         *  5. Java中wait和seelp方法的不同
+         *  5. Java中wait和sleep方法的不同
          *      - sleep()方法是Thread的方法
          *      - wait()方法是Object的方法
          *      - sleep方法没有释放锁，而wait方法释放了锁
@@ -78,6 +78,30 @@ public class ThreadsActivity extends AppCompatActivity {
          *      -  wait属于Object的成员方法，一旦一个对象调用了wait方法，必须要采用notify()和notifyAll()方法唤醒该进程;
          *         如果线程拥有某个或某些对象的同步锁，那么在调用了wait()后，这个线程就会释放它持有的所有同步资源，
          *         而不限于这个被调用了wait()方法的对象。wait()方法也同样会在wait的过程中有可能被其他对象调用interrupt()方法而产生
+         */
+
+        /**
+         *  6. wait/notify关键字的理解
+         *      - wait（）：
+         *          - 将当前线程置入休眠状态，直到接到通知或被中断为止
+         *          - 在调用wait（）之前，线程必须要获得该对象的对象级别锁，即只能在同步方法或同步块中调用wait（）方法。
+         *          - 进入wait（）方法后，当前线程释放锁。在从wait（）返回前，线程与其他线程竞争重新获得锁。
+         *            如果调用wait（）时，没有持有适当的锁，则抛出IllegalMonitorStateException，它是RuntimeException的一个子类，
+         *            因此，不需要try-catch结构。
+         *      - notify（）：
+         *          - 在同步方法或同步块中调用，即在调用前，线程也必须要获得该对象的对象级别锁，如果调用notify（）时没有持有适当的锁，
+         *            也会抛出IllegalMonitorStateException
+         *          - 该方法用来通知那些可能等待该对象的对象锁的其他线程。如果有多个线程等待，
+         *            则线程规划器任意挑选出其中一个wait（）状态的线程来发出通知，并使它等待获取该对象的对象锁
+         *          - notify后，当前线程不会马上释放该对象锁，wait所在的线程并不能马上获取该对象锁，
+         *            要等到程序退出synchronized代码块后，当前线程才会释放锁，wait所在的线程也才可以获取该对象锁
+         *      - 总结：
+         *          - 1.如果线程调用了对象的wait（）方法，那么线程便会处于该对象的等待池中，等待池中的线程不会去竞争该对象的锁。
+         *          - 2.当有线程调用了对象的notifyAll（）方法（唤醒所有wait线程）或notify（）方法（只随机唤醒一个wait线程），
+         *              被唤醒的的线程便会进入该对象的锁池中，锁池中的线程会去竞争该对象锁。
+         *          - 3.优先级高的线程竞争到对象锁的概率大，假若某线程没有竞争到该对象锁，它还会留在锁池中，
+         *              唯有线程再次调用wait（）方法，它才会重新回到等待池中。而竞争到对象锁的线程则继续往下执行，
+         *              直到执行完了synchronized代码块，它会释放掉该对象锁，这时锁池中的线程会继续竞争该对象锁。
          */
 
 
