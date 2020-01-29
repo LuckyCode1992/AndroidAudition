@@ -104,6 +104,16 @@ public class ThreadsActivity extends AppCompatActivity {
          *              直到执行完了synchronized代码块，它会释放掉该对象锁，这时锁池中的线程会继续竞争该对象锁。
          */
 
+        /**
+         *  7.什么导致线程阻塞
+         *      - 阻塞状态的线程的特点是：该线程放弃CPU的使用，暂停运行，只有等到导致阻塞的原因消除之后才恢复运行。
+         *        或者是被其他的线程中断，该线程也会退出阻塞状态，同时抛出InterruptedException
+         *      - 1.线程执行了Thread.sleep(intmillsecond);方法，当前线程放弃CPU，睡眠一段时间，然后再恢复执行
+         *      - 2.线程执行一段同步代码，但是尚且无法获得相关的同步锁，只能进入阻塞状态，等到获取了同步锁，才能回复执行。
+         *      - 3.线程执行了一个对象的wait()方法，直接进入阻塞状态，等待其他线程执行notify()或者notifyAll()方法。
+         *      - 4.线程执行某些IO操作，因为等待相关的资源而进入了阻塞状态。比如说监听system.in，但是尚且没有收到键盘的输入，则进入阻塞状态。
+         */
+
 
 
         findViewById(R.id.btn_fun_thread_way).setOnClickListener(new View.OnClickListener() {
