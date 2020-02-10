@@ -1,13 +1,16 @@
 package com.example.androidaudition;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.view.View;
 
+import java.util.Random;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Semaphore;
 
 public class ThreadsActivity extends AppCompatActivity {
@@ -125,6 +128,89 @@ public class ThreadsActivity extends AppCompatActivity {
          *            通常是没有给与线程完成资源释放工作的机会，因此会导致程序工作在不确定的状态下。
          */
 
+        /**
+         *  9.java中的同步的方法
+         *      - 为何要使用同步？
+         *          - java允许多线程并发控制，当多个线程同时操作一个可共享的资源变量时（如数据的增删改查），
+         *            将会导致数据不准确，相互之间产生冲突，因此加入同步锁以避免在该线程没有完成操作之前，被其他线程的调用，
+         *            从而保证了该变量的唯一性和准确性。
+         *      1. 同步方法
+         *          - synchronized关键字修饰方法
+         *          - public synchronized void save(){}
+         *          - java的每个对象都有一个内置锁，当用此关键字修饰方法时，
+         *            内置锁会保护整个方法。在调用该方法前，需要获得内置锁，否则就处于阻塞状态。
+         *          - 注： synchronized关键字也可以修饰静态方法，此时如果调用该静态方法，将会锁住整个类
+         *      2.同步代码块
+         *          - synchronized关键字修饰语句块
+         *          - 被该关键字修饰的语句块会自动被加上内置锁，从而实现同步
+         *          - synchronized(object){}
+         *          -  注：同步是一种高开销的操作，因此应该尽量减少同步的内容。
+         *             通常没有必要同步整个方法，使用synchronized代码块同步关键代码即可。
+         *      3.使用特殊域变量(volatile)实现线程同步
+         *          - volatile关键字为域变量的访问提供了一种免锁机制
+         *          - 使用volatile修饰域相当于告诉虚拟机该域可能会被其他线程更新
+         *          - 因此每次使用该域就要重新计算，而不是使用寄存器中的值
+         *          - volatile不会提供任何原子操作，它也不能用来修饰final类型的变量
+         *          -  注：多线程中的非同步问题主要出现在对域的读写上，如果让域自身避免这个问题，则就不需要修改操作该域的方法。
+         *             用final域，有锁保护的域和volatile域可以避免非同步的问题。
+         *      4.使用重入锁实现线程同步
+         *          - 在JavaSE5.0中新增了一个java.util.concurrent包来支持同步。
+         *          - ReentrantLock类是可重入、互斥、实现了Lock接口的锁
+         *          - 它与使用synchronized方法和快具有相同的基本行为和语义，并且扩展了其能力
+         *              - ReentrantLock() : 创建一个ReentrantLock实例;
+         *              - lock() : 获得锁; unlock() : 释放锁
+         *              - 执行需要执行的内容
+         *              - unlock() : 释放锁
+         *          - 注：ReentrantLock()还有一个可以创建公平锁的构造方法，但由于能大幅度降低程序运行效率，不推荐使用
+         *      5.使用局部变量实现线程同步
+         *          - 如果使用ThreadLocal管理变量，则每一个使用该变量的线程都获得该变量的副本，
+         *            副本之间相互独立，这样每一个线程都可以随意修改自己的变量副本，而不会对其他线程产生影响。
+         *          - ThreadLocal 类的常用方法：threadLocalDemo
+         *              - ThreadLocal() : 创建一个线程本地变量
+         *              - initialValue() : 返回此线程局部变量的当前线程的"初始值"
+         *              - set(T value) : 将此线程局部变量的当前线程副本中的值设置为value
+         *              - get() : 返回此线程局部变量的当前线程副本中的值
+         *          - 注：ThreadLocal与同步机制
+         *              - ThreadLocal与同步机制都是为了解决多线程中相同变量的访问冲突问题。
+         *              - 前者采用以"空间换时间"的方法，后者采用以"时间换空间"的方式
+         *      6.使用阻塞队列实现线程同步 见demo：BlockingSynchronizedThread
+         *          - 前面5种同步方式都是在底层实现的线程同步，但是我们在实际开发当中，应当尽量远离底层结构。
+         *            使用javaSE5.0版本中新增的java.util.concurrent包将有助于简化开发。
+         *          - 使用LinkedBlockingQueue<E>来实现线程的同步
+         *              - LinkedBlockingQueue<E>是一个基于已连接节点的，范围任意的blocking queue。
+         *                队列是先进先出的顺序（FIFO）
+         *          - LinkedBlockingQueue 类常用方法
+         *              - LinkedBlockingQueue() : 创建一个容量为Integer.MAX_VALUE的LinkedBlockingQueue
+         *              - put(E e) : 在队尾添加一个元素，如果队列满则阻塞（还有add，offer方法）
+         *              - size() : 返回队列中的元素个数
+         *              - take() : 移除并返回队头元素，如果队列空则阻塞
+         *          - 注：BlockingQueue<E>定义了阻塞队列的常用方法，尤其是三种添加元素的方法，我们要多加注意，当队列满时
+         *              - add()方法会抛出异常
+         *              - offer()方法返回false
+         *              - put()方法会阻塞
+         *      7.使用原子变量实现线程同步
+         *          - 需要使用线程同步的根本原因在于对普通变量的操作不是原子的。
+         *          - 原子操作就是指将读取变量值、修改变量值、保存变量值看成一个整体来操作
+         *            即-这几种行为要么同时完成，要么都不完成。
+         *          - 在java的util.concurrent.atomic包中提供了创建了原子类型变量的工具类，
+         *            使用该类可以简化线程同步
+         *              - AtomicInteger类常用方法：用此举例
+         *                  - AtomicInteger(int initialValue) : 创建具有给定初始值的新的AtomicInteger
+         *                  - addAddGet(int data) : 以原子方式将给定值与当前值相加
+         *                  - get() : 获取当前值
+         *
+         *      - 注意：关于Lock对象和synchronized关键字的选择
+         *          - 最好两个都不用，使用一种java.util.concurrent包提供的机制，能够帮助用户处理所有与锁相关的代码。
+         *          - 如果synchronized关键字能满足用户的需求，就用synchronized，因为它能简化代码
+         *          - 如果需要更高级的功能，就用ReentrantLock类，此时要注意及时释放锁，否则会出现死锁，通常在finally代码释放锁
+         *      - 注意：ThreadLocal与同步机制
+         *          - ThreadLocal与同步机制都是为了解决多线程中相同变量的访问冲突问题。
+         *          - ThreadLocal采用以"空间换时间"的方法，同步机制采用以"时间换空间"的方式
+         *              - ThreadLocal创建副本，修改副本，所以是空间换时间
+         *              - 同步机制 始终操作一个变量，但是，其他线程需要等待，所以是时间换空间
+         *
+         *
+         */
 
 
         findViewById(R.id.btn_fun_thread_way).setOnClickListener(new View.OnClickListener() {
@@ -139,12 +225,36 @@ public class ThreadsActivity extends AppCompatActivity {
                 semaphoreTest();
             }
         });
+        findViewById(R.id.btn_linkedblockingqueue).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                BlockingSynchronizedThread bst = new BlockingSynchronizedThread();
+                BlockingSynchronizedThread.LinkBlockThread lbt = bst.new LinkBlockThread();
+                Thread thread1 = new Thread(lbt);
+                Thread thread2 = new Thread(lbt);
+                thread1.start();
+                thread2.start();
+            }
+        });
     }
 
-    void semaphoreTest(){
+    void threadLocalDemo() {
+        ThreadLocal<Integer> account = new ThreadLocal<Integer>() {
+            @Nullable
+            @Override
+            protected Integer initialValue() {
+                return super.initialValue();
+            }
+        };
+        account.set(1000);
+        account.get();
+
+    }
+
+    void semaphoreTest() {
         ExecutorService service = Executors.newCachedThreadPool();//线程池
         final Semaphore semaphore = new Semaphore(3);//3个坑位
-        for(int i=0;i<10;i++){
+        for (int i = 0; i < 10; i++) {
             Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
@@ -154,13 +264,13 @@ public class ThreadsActivity extends AppCompatActivity {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    System.out.println("线程"+Thread.currentThread().getName()+"进入,当前已有"+(3-semaphore.availablePermits()) + "个并发");
+                    System.out.println("线程" + Thread.currentThread().getName() + "进入,当前已有" + (3 - semaphore.availablePermits()) + "个并发");
                     try {
-                        Thread.sleep((long)(Math.random()*10000));
+                        Thread.sleep((long) (Math.random() * 10000));
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    System.out.println("线程"+Thread.currentThread().getName()+"即将离开");
+                    System.out.println("线程" + Thread.currentThread().getName() + "即将离开");
                     //释放
                     semaphore.release();
                 }
@@ -179,7 +289,7 @@ public class ThreadsActivity extends AppCompatActivity {
 
 
         Callable callable3 = new Callable3();
-        ExecutorService service= Executors.newFixedThreadPool(1);
+        ExecutorService service = Executors.newFixedThreadPool(1);
         service.submit(callable3);
         service.shutdownNow();//现在关闭
 
@@ -209,5 +319,63 @@ class Callable3 implements Callable<String> {
     public String call() throws Exception {
         System.out.println("当前线程：Thread3-" + Thread.currentThread().getName());
         return "返回结果了";
+    }
+}
+
+class BlockingSynchronizedThread {
+    /**
+     * 定义一个阻塞队列用来存储生产出来的商品
+     */
+    private LinkedBlockingQueue<Integer> queue = new LinkedBlockingQueue<Integer>();
+    /**
+     * 定义生产商品个数
+     */
+    private static final int size = 10;
+    /**
+     * 定义启动线程的标志，为0时，启动生产商品的线程；为1时，启动消费商品的线程
+     */
+    private int flag = 0;
+
+    public class LinkBlockThread implements Runnable {
+        @Override
+        public void run() {
+            int new_flag = flag++;
+            System.out.println("启动线程 " + new_flag);
+            if (new_flag == 0) {
+                for (int i = 0; i < size; i++) {
+                    int b = new Random().nextInt(255);
+                    System.out.println("生产商品：" + b + "号");
+                    try {
+                        queue.put(b);
+                    } catch (InterruptedException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                    System.out.println("仓库中还有商品：" + queue.size() + "个");
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                }
+            } else {
+                for (int i = 0; i < size / 2; i++) {
+                    try {
+                        int n = queue.take();
+                        System.out.println("消费者买去了" + n + "号商品");
+                    } catch (InterruptedException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                    System.out.println("仓库中还有商品：" + queue.size() + "个");
+                    try {
+                        Thread.sleep(100);
+                    } catch (Exception e) {
+                        // TODO: handle exception
+                    }
+                }
+            }
+        }
     }
 }
