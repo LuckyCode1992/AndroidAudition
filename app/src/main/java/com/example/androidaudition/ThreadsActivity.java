@@ -304,6 +304,14 @@ public class ThreadsActivity extends AppCompatActivity {
          *
          */
 
+        /**
+         *  13.断点续传和多线程下载
+         *      - RandomAccessFile
+         *      - WEB下载方式分为HTTP与FTP两种类型
+         *          - Hyper Text Transportation Protocol(超文本传输协议)
+         *          - File Transportation Protocol(文件传输协议)
+         */
+
 
         findViewById(R.id.btn_fun_thread_way).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -417,6 +425,7 @@ public class ThreadsActivity extends AppCompatActivity {
     }
 
     int m = 0;
+
     void scheduledThreadPoolDemo() {
 
         final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
@@ -425,11 +434,11 @@ public class ThreadsActivity extends AppCompatActivity {
             public void run() {
                 m++;
                 Log.d("executorService_", "scheduledThreadPoolDemo");
-                if(m>8){
+                if (m > 8) {
                     executorService.shutdown();
                 }
             }
-        },0,300,TimeUnit.MILLISECONDS );
+        }, 0, 300, TimeUnit.MILLISECONDS);
 
 
     }
