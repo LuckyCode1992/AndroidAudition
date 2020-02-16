@@ -4,14 +4,19 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import java.util.Random;
 import java.util.concurrent.Callable;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public class ThreadsActivity extends AppCompatActivity {
 
@@ -227,6 +232,76 @@ public class ThreadsActivity extends AppCompatActivity {
          *          - 锁顺序死锁
          *          - 动态锁顺序死锁
          *          - 协作对象之间发生死锁
+         *       - 解决方法：
+         *          - 使用tryLock()定时锁，超过时限则返回错误信息
+         *          - 缩减同步代码块范围，最好仅操作共享变量时才加锁
+         *          - 以固定的顺序加锁
+         */
+
+        /**
+         *  11.对象锁和类锁，私有锁
+         *      - 类锁：在代码中的方法上加了static和synchronized的锁，或者synchronized(xxx.class）的代码段
+         *      - 对象锁：在代码中的方法上加了synchronized的锁，或者synchronized(this）的代码段
+         *      - 私有锁：在类内部声明一个私有属性如private Object lock，在需要加锁的代码段synchronized(lock）
+         *      - 注意：对象锁，只针对对象。不同对象之间，互不影响。类锁，是针对类，即，所有此类的对象都会被这个锁影响。
+         */
+
+        /**
+         *  12.线程池
+         *      - 为什么用线程池:
+         *          - 创建/销毁线程伴随着系统开销，过于频繁的创建/销毁线程，会很大程度上影响处理效率
+         *          - 线程并发数量过多，抢占系统资源从而导致阻塞
+         *          - 对线程进行一些简单的管理。比如：延时执行、定时循环执行的策略等。运用线程池都能进行很好的实现
+         *      - 线程池ThreadPoolExecutor
+         *          ThreadPoolExecutor(int corePoolSize,
+         *                           int maximumPoolSize,
+         *                           long keepAliveTime,
+         *                           TimeUnit unit,
+         *                           BlockingQueue<Runnable> workQueue,
+         *                           ThreadFactory threadFactory,
+         *                           RejectedExecutionHandler handler)
+         *          - int corePoolSize => 该线程池中核心线程数最大值
+         *              - 核心线程：
+         *                  - 线程池新建线程的时候，如果当前线程总数小于corePoolSize，则新建的是核心线程，如果超过corePoolSize，则新建的是非核心线程
+         *                  - 核心线程默认情况下会一直存活在线程池中，即使这个核心线程啥也不干(闲置状态)。
+         *                  - 如果指定ThreadPoolExecutor的allowCoreThreadTimeOut这个属性为true，那么核心线程如果不干活(闲置状态)的话，
+         *                    超过一定时间(时长下面参数决定)，就会被销毁掉
+         *          - int maximumPoolSize => 该线程池中线程总数最大值
+         *              - 线程总数 = 核心线程数 + 非核心线程数。非核心线程：不是核心线程的线程
+         *          - long keepAliveTime => 该线程池中非核心线程闲置超时时长
+         *              - 一个非核心线程，如果不干活(闲置状态)的时长超过这个参数所设定的时长，就会被销毁掉
+         *              - 如果设置allowCoreThreadTimeOut = true，则会作用于核心线程
+         *          - BlockingQueue<Runnable> workQueue => 该线程池中的任务队列：维护着等待执行的Runnable对象
+         *              - 当所有的核心线程都在干活时，新添加的任务会被添加到这个队列中等待处理，如果队列满了，则新建非核心线程执行任务
+         *                  - 常用的workQueue类型：
+         *                      - SynchronousQueue：（这个消息队列相当于不存在一样）这个队列接收到任务的时候，会直接提交给线程处理，而不保留它，
+         *                        如果所有线程都在工作那就新建一个线程来处理这个任务！
+         *                      - LinkedBlockingQueue：（这个线程队列只给核心线程处理）这个队列接收到任务的时候，如果当前线程数小于核心线程数，
+         *                        则新建线程(核心线程)处理任务；如果当前线程数等于核心线程数，则进入队列等待。
+         *                      - ArrayBlockingQueue：（标注消息队列）可以限定队列的长度，接收到任务的时候，如果没有达到corePoolSize的值，
+         *                        则新建线程(核心线程)执行任务，如果达到了，则入队等候，如果队列已满，则新建线程(非核心线程)执行任务，
+         *                        又如果总线程数到了maximumPoolSize，并且队列也满了，则发生错误
+         *                      - DelayQueue：（会给线程延迟的消息队列）队列内元素必须实现Delayed接口，这就意味着你传进去的任务必须先实现Delayed接口。
+         *                        这个队列接收到任务时，首先先入队，只有达到了指定的延时时间，才会执行任务
+         *
+         *      - 常见线程池 （基本就使用这些，而不是去创建线程池）
+         *          - CachedThreadPool()（可缓存线程池）
+         *              - 线程数无限制
+         *              - 有空闲线程则复用空闲线程，若无空闲线程则新建线程
+         *              - 一定程序减少频繁创建/销毁线程，减少系统开销
+         *          - FixedThreadPool()（定长线程池）
+         *              - 可控制线程最大并发数（同时执行的线程数）
+         *              - 超出的线程会在队列中等待
+         *          - ScheduledThreadPool()（定长线程池）
+         *              - 支持定时及周期性任务执行。
+         *          - SingleThreadExecutor()（单线程化的线程池）
+         *              - 有且仅有一个工作线程执行任务
+         *              - 所有任务按照指定顺序执行，即遵循队列的入队出队规则
+         *      - 使用方法：
+         *           ExecutorService service = Executors.newCachedThreadPool();//线程池
+         *           Runnable  runnable = xxx;
+         *           service.execute(runnable);
+         *
          */
 
 
@@ -253,6 +328,118 @@ public class ThreadsActivity extends AppCompatActivity {
                 thread2.start();
             }
         });
+        findViewById(R.id.btn_cachedThreadPoolDemo).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cachedThreadPoolDemo();
+            }
+        });
+        findViewById(R.id.btn_fixedThreadPoolDemo).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fixedThreadPoolDemo();
+            }
+        });
+        findViewById(R.id.btn_scheduledThreadPoolDemo).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                scheduledThreadPoolDemo();
+            }
+        });
+        findViewById(R.id.btn_singleThreadExecutorDemo).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                singleThreadExecutorDemo();
+            }
+        });
+    }
+
+
+    Runnable runnable1 = new Runnable() {
+        @Override
+        public void run() {
+            for (int i = 0; i < 10; i++) {
+                Log.d("executorService_", "runnable1");
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }
+    };
+    Runnable runnable2 = new Runnable() {
+        @Override
+        public void run() {
+            for (int i = 0; i < 5; i++) {
+                Log.d("executorService_", "runnable2");
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    };
+
+    Runnable runnable3 = new Runnable() {
+        @Override
+        public void run() {
+            for (int i = 0; i < 3; i++) {
+                Log.d("executorService_", "runnable3");
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }
+    };
+
+
+    void cachedThreadPoolDemo() {
+        ExecutorService executorService = Executors.newCachedThreadPool();
+
+        executorService.execute(runnable1);
+        executorService.execute(runnable2);
+
+
+    }
+
+    void fixedThreadPoolDemo() {
+        ExecutorService executorService = Executors.newFixedThreadPool(2);
+        executorService.execute(runnable1);
+        executorService.execute(runnable2);
+        executorService.execute(runnable3);
+
+    }
+
+    int m = 0;
+    void scheduledThreadPoolDemo() {
+
+        final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
+        executorService.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
+                m++;
+                Log.d("executorService_", "scheduledThreadPoolDemo");
+                if(m>8){
+                    executorService.shutdown();
+                }
+            }
+        },0,300,TimeUnit.MILLISECONDS );
+
+
+    }
+
+    void singleThreadExecutorDemo() {
+
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.execute(runnable1);
+        executorService.execute(runnable2);
+
     }
 
     void threadLocalDemo() {

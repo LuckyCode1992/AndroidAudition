@@ -37,6 +37,40 @@
                     style="@style/button_style"/>
             </LinearLayout>
 
+            <LinearLayout
+            style="@style/layout_style">
+            <Button
+                android:id="@+id/btn_cachedThreadPoolDemo"
+                android:text="cachedThreadPoolDemo"
+                style="@style/button_style"/>
+        </LinearLayout>
+
+            <LinearLayout
+                style="@style/layout_style">
+                <Button
+                    android:id="@+id/btn_fixedThreadPoolDemo"
+                    android:text="fixedThreadPoolDemo"
+                    style="@style/button_style"/>
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/layout_style">
+                <Button
+                    android:id="@+id/btn_scheduledThreadPoolDemo"
+                    android:text="scheduledThreadPoolDemo"
+                    style="@style/button_style"/>
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/layout_style">
+                <Button
+                    android:id="@+id/btn_singleThreadExecutorDemo"
+                    android:text="singleThreadExecutorDemo"
+                    style="@style/button_style"/>
+            </LinearLayout>
+
+
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>
