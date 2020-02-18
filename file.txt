@@ -878,3 +878,6 @@ Android 面试必备 - 线程
 
 Android 面试必备 - JVM 及 类加载机制
 
+
+
+线程同步，handler ，service，锁，内存泄漏，内存溢出。glide的原理，hashMap，linkedlist，实现原理。socket，tcp和udp

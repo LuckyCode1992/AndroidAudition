@@ -5,11 +5,73 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".AndroidBasicActivity">
-    <TextView
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:id="@+id/tv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <LinearLayout
+                style="@style/layout_style">
+                <Button
+                    android:id="@+id/btn_action_demo"
+                    android:text="action_demo"
+                    style="@style/button_style"/>
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/layout_style">
+                <Button
+                    android:id="@+id/btn_category_demo"
+                    android:text="category_demo"
+                    style="@style/button_style"/>
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/layout_style">
+                <Button
+                    android:id="@+id/btn_linkedblockingqueue"
+                    android:text="LinkedBlockingQueue"
+                    style="@style/button_style"/>
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/layout_style">
+                <Button
+                    android:id="@+id/btn_cachedThreadPoolDemo"
+                    android:text="cachedThreadPoolDemo"
+                    style="@style/button_style"/>
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/layout_style">
+                <Button
+                    android:id="@+id/btn_fixedThreadPoolDemo"
+                    android:text="fixedThreadPoolDemo"
+                    style="@style/button_style"/>
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/layout_style">
+                <Button
+                    android:id="@+id/btn_scheduledThreadPoolDemo"
+                    android:text="scheduledThreadPoolDemo"
+                    style="@style/button_style"/>
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/layout_style">
+                <Button
+                    android:id="@+id/btn_singleThreadExecutorDemo"
+                    android:text="singleThreadExecutorDemo"
+                    style="@style/button_style"/>
+            </LinearLayout>
+
+
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
