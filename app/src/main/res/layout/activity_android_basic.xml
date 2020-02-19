@@ -32,8 +32,8 @@
             <LinearLayout
                 style="@style/layout_style">
                 <Button
-                    android:id="@+id/btn_linkedblockingqueue"
-                    android:text="LinkedBlockingQueue"
+                    android:id="@+id/btn_start_for_result"
+                    android:text="start_for_result"
                     style="@style/button_style"/>
             </LinearLayout>
 

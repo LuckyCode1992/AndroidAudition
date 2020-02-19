@@ -1,4 +1,4 @@
-package com.example.androidaudition.intentfilter_demo;
+package com.example.androidaudition.demoactivity;
 
 import androidx.appcompat.app.AppCompatActivity;
 

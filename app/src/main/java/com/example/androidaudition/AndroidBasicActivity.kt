@@ -1,10 +1,13 @@
 package com.example.androidaudition
 
+import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.TextView
+import android.widget.Toast
+import com.example.androidaudition.demoactivity.ResultActivity
 import kotlinx.android.synthetic.main.activity_android_basic.*
 import java.util.*
 
@@ -72,6 +75,8 @@ class AndroidBasicActivity : AppCompatActivity() {
          *            你可以通过在manifest中设置android:configChanges属性来实现这点。
          *            你可以在这里声明activity可以处理的任何配置改变，当这些配置改变时不会重新启动activity，
          *            而会调用activity的onConfigurationChanged(Resources.Configuration)方法
+         *       - 1.7 startActivityForResult
+         *          - 见 startForResult
          *
          *
          */
@@ -83,18 +88,39 @@ class AndroidBasicActivity : AppCompatActivity() {
             categoryDemo()
         }
 
+        btn_start_for_result.setOnClickListener {
+           startForResult()
+        }
     }
-    fun actionDemo(){
+
+    fun startForResult() {
+        val intent = Intent()
+        intent.setClass(this,ResultActivity::class.java)
+        startActivityForResult(intent,999)
+    }
+
+    fun actionDemo() {
         val intent = Intent()
         intent.setAction("action_2")
         startActivity(intent)
     }
-    fun categoryDemo(){
+
+    fun categoryDemo() {
         //存在bug
 //        val intent = Intent()
 //        intent.addCategory("android.intent.category.MY_CATEGORY")
 //        startActivity(intent)
 
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode== Activity.RESULT_OK){
+            if (requestCode==999){
+                val result =data?.getExtras()?.getString("result")
+                Toast.makeText(this,result,Toast.LENGTH_LONG).show()
+            }
+        }
     }
 
 }

@@ -4,11 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".intentfilter_demo.DataDemoActivity">
-    <TextView
+    tools:context=".demoactivity.ResultActivity">
+
+    <Button
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:text="data——demo"
+        android:id="@+id/btn_back"
+        android:text="返回结果"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
