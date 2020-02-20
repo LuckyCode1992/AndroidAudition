@@ -13,15 +13,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".demoactivity.ResultActivity">
-
-        </activity>
+        <activity android:name=".CommonInterviewActivity"></activity>
+        <activity android:name=".demoactivity.ResultActivity"></activity>
         <activity android:name=".demoactivity.CategoryDemoActivity">
             <intent-filter>
-                <category android:name="android.intent.category.MY_CATEGORY"/>
+                <category android:name="android.intent.category.MY_CATEGORY" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-
         </activity>
         <activity android:name=".demoactivity.ActionDemoActivity">
             <intent-filter>
