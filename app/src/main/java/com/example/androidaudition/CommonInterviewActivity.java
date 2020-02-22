@@ -467,13 +467,150 @@ public class CommonInterviewActivity extends AppCompatActivity {
          */
 
 
+        /**
+         *  内存泄漏
+         *      - 什么是内存泄漏？
+         *          - 用动态存储分配函数动态开辟的空间，在使用完毕后未释放，结果导致一直占据该内存单元。直到程序结束。即所谓的内存泄漏。
+         *          - 其实说白了就是该内存空间使用完毕之后未回收
+         *          - 持有引用者的生命周期 > 被引用者的生命周期
+         *      - 内存泄漏会导致的问题
+         *          - 内存泄露就是系统回收不了那些分配出去但是又不使用的内存, 随着程序的运行,可以使用的内存就会越来越少,
+         *            机子就会越来越卡,直到内存数据溢出,然后程序就会挂掉,再跟着操作系统也可能无响应。
+         *      - 常见的内存泄漏场景
+         *          - Handler 导致的内存泄漏
+         *              public class SampleActivity extends AppCompatActivity {
+         *
+         *                  private final Handler mLeakyHandler = new Handler() {
+         *                       @Override
+         *                       public void handleMessage(Message msg) {
+         *                           // ...
+         *                       }
+         *                  };
+         *
+         *                  @Override
+         *                  protected void onCreate(Bundle savedInstanceState) {
+         *                      super.onCreate(savedInstanceState);
+         *                      setContentView(R.layout.activity_main);
+         *                      // Post a message and delay its execution for 10 minutes.
+         *                      mLeakyHandler.postDelayed(new Runnable() {
+         *                          @Override
+         *                          public void run() { }
+         *
+         *                       },1000*60*1);
+         *                  // Go back to the previous Activity.
+         *                  finish();
+         *              }
+         *          }
+         *          原理浅析:
+         *              内部类会持有外部类的引用，而在activity 销毁的时候 ，内部类的handler 并没有被销毁，这个时候，内部类的handler还持有
+         *              外部的activity，导致本该被回收的外部activity不能被回收，就可能出现 内存泄漏
+         *          解决方案：
+         *               private static class MyHandler extends Handler {
+         *                  private final WeakReference<Sample2Activity> mActivity;
+         *
+         *                  public MyHandler(Sample2Activity activity) {
+         *                      mActivity = new WeakReference<Sample2Activity>(activity);
+         *                  }
+         *
+         *                  @Override
+         *                  public void handleMessage   (Message msg) {
+         *                      Sample2Activity activity = mActivity.get();
+         *                      if (activity != null) {
+         *                          // ...
+         *                      }
+         *                  }
+         *              }
+         *          使用静态内部类和弱引用
+         *          原理解析：静态内部类不会持有外部类的引用，其跟外部类的关系，可以看成平级
+         *                   WeakReference 的相关概念：弱引用对象的存在不会阻止它所指向的对象变被垃圾回收器回收
+         *      - 静态变量导致内存泄漏
+         *          public class Sample3Activity extends AppCompatActivity{
+         *              private static Context sContext;
+         *
+         *              @Override protected void onCreate(Bundle savedInstanceState) {
+         *                  super.onCreate(savedInstanceState);
+         *                  setContentView(R.layout.activity_sample3);
+         *                  sContext = this;
+         *                  //finish();
+         *                  Button button = (Button)findViewById(R.id.finish);
+         *                  button.setOnClickListener(new View.OnClickListener() {
+         *                      @Override
+         *                      public void onClick(View view) {
+         *                          finish();
+         *                      }
+         *                  });
+         *              }
+         *          }
+         *          原理分析：静态变量持有当前 Activity。导致当前 Activity 结束时候，静态变量仍然持有它的引用
+         *          解决方案，销毁当前activity前，静态变量赋值为null
+         *       - 单利模式导致内存泄漏
+         *          public class AppManager {
+         *              private static AppManager instance;
+         *              private Context context;
+         *              private AppManager(Context context) {
+         *                  this.context = context;
+         *              }
+         *              public static AppManager getInstance(Context context) {
+         *                  if (instance != null) {
+         *                      instance = new AppManager(context);
+         *                  }
+         *                  return instance;
+         *              }
+         *          }
+         *          原理分析：当创建上述单例的时候，由于需要传入一个Context，所以这个 Context 的生命周期的长短至关重要：
+         *          1.如果是 Application 的 Context：OK，这样是可以的，因为单例的生命周期和 Application 的一样长 。
+         *          2.如果是 Activity 的 Context：当这个 Context 所对应的 Activity 退出时，它的内存并不会被回收，因为单例对象持有该 Activity 的引用
+         *          解决方案：this.context = context.getApplicationContext();
+         *          解释：这样不管传入什么 Context 最终将使用 Application 的 Context，而单例的生命周期和应用的一样长，这样就防止了内存泄漏
+         *       - 非静态内部类持有外部类的实例 和handler 造成内存泄漏基本一样的原理
+         *       - 线程造成的内存泄漏
+         *          public class Sample4Activity extends Activity {
+         *
+         *              @Override
+         *              protected void onCreate(Bundle savedInstanceState) {
+         *                  super.onCreate(savedInstanceState);
+         *                  setContentView(R.layout.activity_sample3);
+         *                  leakSample();
+         *                  finish();
+         *              }
+         *
+         *              private void leakSample() {
+         *                  new MyThread().start();
+         *              }
+         *
+         *              private class MyThread extends Thread {
+         *                  @Override
+         *                  public void run() {
+         *                      while (true) {
+         *                          SystemClock.sleep(1000);
+         *                      }
+         *                  }
+         *              }
+         *           }
+         *           原理分析：Runnable 是一个匿名内部类( AsyncTask 存在匿名内部类的情况)，对当前 Activity 都有一个隐式引用。
+         *                    如果在当前 Activity 在销毁之前，任务还未完成，那么将导致 Activity 的内存资源无法回收，导致内存泄漏
+         *           解决方案：private static class MyThread extends Thread 静态
+         *       - 属性动画导致内存泄漏
+         *          动画播放中，或者设置为无限循环，此时，关闭当前activity ，此时 Activity 的 View 会被动画所持有，就会内存泄漏
+         *          解决办法自然很简单，在 OnDestory() 中去取消动画即可。
+         *       - 资源未关闭造成的内存泄漏
+         *          对于使用了BraodcastReceiver，ContentObserver，File， Cursor，Stream，Bitmap, EventBus等资源的使用，
+         *          应该在Activity销毁时及时关闭或者注销，否则这些资源将不会被回收，造成内存泄漏。
+         *          解决方案：关闭资源
+         *
+         *
+         *
+         *
+         */
+
+
     }
 
-@SuppressLint("HandlerLeak")
-static Handler handler = new Handler(){
-    @Override
-    public void handleMessage(@NonNull Message msg) {
-        super.handleMessage(msg);
-    }
-};
+    @SuppressLint("HandlerLeak")
+    static Handler handler = new Handler() {
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            super.handleMessage(msg);
+        }
+    };
 }
