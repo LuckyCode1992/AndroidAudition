@@ -13,6 +13,17 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
+        <LinearLayout
+            android:orientation="vertical"
+            style="@style/layout_style">
+            <Button
+                android:id="@+id/btn_1"
+                android:text=" 常见的面试题 "
+                style="@style/button_style"/>
+        </LinearLayout>
+
+
         <LinearLayout
             android:orientation="vertical"
            style="@style/layout_style">

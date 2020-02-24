@@ -1,20 +1,31 @@
 package com.example.androidaudition;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.app.Service;
+import android.content.ComponentName;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
+import android.util.Log;
+import android.view.View;
 
 public class CommonInterviewActivity extends AppCompatActivity {
+
+    CommonInterviewActivity activity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_common_interview);
+        activity = this;
 
         /**
          *  java中的同步的方法
@@ -604,6 +615,92 @@ public class CommonInterviewActivity extends AppCompatActivity {
          */
 
 
+        /**
+         *  service
+         *      - Service既不是一个线程，Service通常运行在当成宿主进程的主线程中，
+         *        所以在Service中进行一些耗时操作就需要在Service内部开启线程去操作，否则会引发ANR异常。
+         *      - 不是一个单独的进程。除非在清单文件中声明时指定进程名，否则Service所在进程就是application所在进程
+         *      - Service存在的目的有2个:
+         *          - 告诉系统，当前程序需要在后台做一些处理。这意味着，Service可以不需要UI就在后台运行，
+         *            不用管开启它的页面是否被销毁，只要进程还在就可以在后台运行。可以通过startService()方式调用，
+         *            这里需要注意，除非Service手动调用stopService()或者Service内部主动调用了stopSelf()，否则Service一直运行
+         *          - 程序通过Service对外开放某些操作。通过bindService()方式与Service调用，长期连接和交互，Service生命周期和其绑定的组件相关
+         *      - service 的 启动方式 注意：要在清单配置文件中 注册
+         *          - 1.startService
+         *              - Intent intent = new Intent(MainActivity.this, MyService.class)
+         *              - startService（intent）
+         *              - 注意事项
+         *                  - 当调用Service的startService()后
+         *                      - Service首次启动，则先调用onCreate()，在调用onStartCommand()
+         *                      - Service已经启动，则直接调用onStartCommand()
+         *                  - 当调用stopSelf()或者stopService()后，会执行onDestroy(),代表Service生命周期结束
+         *                  - startService方式启动Service不会调用到onBind()。
+         *                    startService可以多次调用，每次调用都会执行onStartCommand()。
+         *                    不管调用多少次startService，只需要调用一次stopService就结束。
+         *                    如果startService后没有调用stopSelf或者stopService，则Service一直存活并运行在后台。
+         *                  - onStartCommand的返回值是一个int值，一共有3种
+         *                      - START_STICKY = 1:service所在进程被kill之后，系统会保留service状态为开始状态。
+         *                        系统尝试重启service，当服务被再次启动，传递过来的intent可能为null，需要注意。
+         *                      - START_NOT_STICKY = 2:service所在进程被kill之后，系统不再重启服务
+         *                      - START_REDELIVER_INTENT = 3:系统自动重启service，并传递之前的intent
+         *                      - 默认返回START_STICKY
+         *          - 2.bindService
+         *              - 通过bindService绑定Service相对startService方式要复杂一点。由于bindService是异步执行的，
+         *                所以需要额外构建一个ServiceConnection对象用与接收bindService的状态，同时还要指定bindService的类型。
+         *              - 使用步骤：
+         *                  - 1.定义用于通信的对象，在Service的onBind()中返回的对象
+         *                  - 2.定义用于接收状体的ServiceConnection
+         *                  - 3.在需要的地方绑定到Service
+         *              - bindService()也可以调用多次，与startService()不同，当发起对象与Service已经成功绑定后，
+         *                不会多次返回ServiceConnection中的回调方法。
+         *              - 通过bindService方式与Service进行绑定后，当没有对象与Service绑定后，Service生命周期结束，
+         *                这个过程包括绑定对象被销毁，或者主动掉调用unbindService()
+         *          - 3.一起调用
+         *              - 当同时调用startService和bindService后，需要分别调用stopService和unbindService，Service才会走onDestroy()
+         *              - 一个Service必须要在既没有和任何Activity关联又处理停止状态的时候才会被销毁。
+         *      - intentService: 为异步而生。
+         *          - 执行某些一次性、异步的操作时，IntentService能很好的满足这个场景。
+         *          - IntentService相比在使用时将不再需要实现onStartCommand(),同时需要实现onHandleIntent()
+         *          - 真正需要我们处理的逻辑就在onHandleIntent()实现，IntentService会内部自动调用stopSelf()关闭自己
+         *
+         */
+        final Intent intent = new Intent();
+
+        findViewById(R.id.btn_start_service).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                intent.setClass(activity, MyService.class);
+                startService(intent);
+            }
+        });
+        findViewById(R.id.btn_stop_service).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                stopService(intent);
+            }
+        });
+        findViewById(R.id.btn_bind_service).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                intent.setClass(activity,MyService.class);
+                bindService(intent,serviceConnection,Service.BIND_AUTO_CREATE);
+            }
+        });
+        findViewById(R.id.btn_unbind_service).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                unbindService(serviceConnection);
+            }
+        });
+        findViewById(R.id.btn_start_intent_service).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                intent.setClass(activity,MyIntentService.class);
+                startService(intent);
+            }
+        });
+
+
     }
 
     @SuppressLint("HandlerLeak")
@@ -613,4 +710,31 @@ public class CommonInterviewActivity extends AppCompatActivity {
             super.handleMessage(msg);
         }
     };
+
+    ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            //和服务绑定成功后，服务会回调该方法
+            //服务异常中断后重启，也会重新调用改方法
+            MyBinder myBinder = (MyBinder) service;
+            Log.d("service_","onServiceConnected - mProcessId:"+myBinder.mProcessId+" name:"+name);
+
+
+        }
+
+        @Override
+        public void onNullBinding(ComponentName name) {
+            //Service的onBind()返回null时将会调用这个方法，并不会调用onServiceConnected()
+            Log.d("service_","onNullBinding - "+" name:"+name);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            // 当服务异常终止时会调用。
+            // 注意，unbindService时不会调用
+            Log.d("service_","onServiceDisconnected - "+" name:"+name);
+        }
+    };
 }
+
+

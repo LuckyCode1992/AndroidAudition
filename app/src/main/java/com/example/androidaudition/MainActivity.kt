@@ -12,6 +12,10 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         val intent = Intent()
 
+        btn_1.setOnClickListener {
+            intent.setClass(this,CommonInterviewActivity::class.java)
+            startActivity(intent)
+        }
         btn_java_basics.setOnClickListener {
             intent.setClass(this,JavaBasicsActivity::class.java)
             startActivity(intent)

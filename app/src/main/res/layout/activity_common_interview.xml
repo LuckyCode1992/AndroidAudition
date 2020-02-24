@@ -6,4 +6,72 @@
     android:layout_height="match_parent"
     tools:context=".CommonInterviewActivity">
 
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <LinearLayout
+                style="@style/layout_style">
+                <Button
+                    android:id="@+id/btn_start_service"
+                    android:text="start_service"
+                    style="@style/button_style"/>
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/layout_style">
+                <Button
+                    android:id="@+id/btn_stop_service"
+                    android:text="stop_service"
+                    style="@style/button_style"/>
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/layout_style">
+                <Button
+                    android:id="@+id/btn_bind_service"
+                    android:text="bind_service"
+                    style="@style/button_style"/>
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/layout_style">
+                <Button
+                    android:id="@+id/btn_unbind_service"
+                    android:text="unbind_service"
+                    style="@style/button_style"/>
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/layout_style">
+                <Button
+                    android:id="@+id/btn_start_intent_service"
+                    android:text="start_intent_service"
+                    style="@style/button_style"/>
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/layout_style">
+                <Button
+                    android:id="@+id/btn_scheduledThreadPoolDemo"
+                    android:text="scheduledThreadPoolDemo"
+                    style="@style/button_style"/>
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/layout_style">
+                <Button
+                    android:id="@+id/btn_singleThreadExecutorDemo"
+                    android:text="singleThreadExecutorDemo"
+                    style="@style/button_style"/>
+            </LinearLayout>
+
+
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>
