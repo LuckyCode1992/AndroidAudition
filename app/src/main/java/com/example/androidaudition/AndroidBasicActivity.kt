@@ -42,6 +42,9 @@ class AndroidBasicActivity : AppCompatActivity() {
          *          - onDestroy：Activity即将被销毁，可以做一些工作和资源的回收（Service、BroadCastReceiver、Map、Bitmap回收等）
          *          - onRestart: Activity正在重新启动，一般时当前Activity从不可见到可见状态时会执行这个方法，
          *            例如：用户按下Home键（锁屏）或者打开新Activity再返回这个Activity
+         *
+         *          - Aactivity 跳转到Bactivity的过程中，生命周期
+         *              -
          *      - 1.3 启动模式
          *          - standard：
          *              - Standard模式是Android的默认启动模式，你不在配置文件中做任何设置，那么这个Activity就是standard模式，
@@ -121,6 +124,31 @@ class AndroidBasicActivity : AppCompatActivity() {
                 Toast.makeText(this,result,Toast.LENGTH_LONG).show()
             }
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        Log.d("activity_","A - onStart")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d("activity_","A - onResume")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.d("activity_","A - onPause")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Log.d("activity_","A - onStop")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d("activity_","A - onDestroy")
     }
 
 }
