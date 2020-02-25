@@ -57,8 +57,8 @@
             <LinearLayout
                 style="@style/layout_style">
                 <Button
-                    android:id="@+id/btn_scheduledThreadPoolDemo"
-                    android:text="scheduledThreadPoolDemo"
+                    android:id="@+id/btn_bind_remote_service"
+                    android:text="bind_remote_service"
                     style="@style/button_style"/>
             </LinearLayout>
 

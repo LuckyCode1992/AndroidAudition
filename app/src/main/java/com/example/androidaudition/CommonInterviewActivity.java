@@ -1,7 +1,6 @@
 package com.example.androidaudition;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
@@ -14,8 +13,17 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
+import android.os.RemoteException;
 import android.util.Log;
 import android.view.View;
+
+import com.example.androidaudition.servicedemo.MyBinder;
+import com.example.androidaudition.servicedemo.MyIntentService;
+import com.example.androidaudition.servicedemo.MyRemoteService;
+import com.example.androidaudition.servicedemo.MyService;
+
+import java.util.HashMap;
+import java.util.LinkedList;
 
 public class CommonInterviewActivity extends AppCompatActivity {
 
@@ -695,10 +703,106 @@ public class CommonInterviewActivity extends AppCompatActivity {
         findViewById(R.id.btn_start_intent_service).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                intent.setClass(activity,MyIntentService.class);
+                intent.setClass(activity, MyIntentService.class);
                 startService(intent);
             }
         });
+        /**
+         *  使用Service实现IPC通信
+         *      - AIDL:Android Interface Definition Language,即Android接口定义语言
+         *      - Service跨进程传递数据需要借助aidl，主要步骤是这样的：
+         *          - 1.编写aidl文件，AS自动生成的java类实现IPC通信的代理
+         *          - 2.继承自己的aidl类，实现里面的方法
+         *          - 3.在onBind()中返回我们的实现类，暴露给外界
+         *          - 需要跟Service通信的对象通过bindService与Service绑定，并在ServiceConnection接收数据
+         *      - 代码实现:
+         *          - 1.新建一个Service
+         *          - 2.在manifest文件中声明我们的Service同时指定运行的进程名,这里并是不只能写remote进程名，你想要进程名都可以
+         *          - 3.新建一个aidl文件用户进程间传递数据
+         *              - AIDL支持的类型：八大基本数据类型、String类型、CharSequence、List、Map、自定义类型
+         *          - 4.实现我们的aidl类
+         *          - 5.在Service的onBind()中返回
+         *          - 6.绑定Service
+         *
+         *
+         */
+        findViewById(R.id.btn_bind_remote_service).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(CommonInterviewActivity.this, MyRemoteService.class);
+                bindService(intent, serviceConnectionRemote, BIND_AUTO_CREATE);
+
+
+            }
+        });
+        /**
+         *  调用其他app的Service
+         *      - 跟调同app下不同进程下的Service相比，调用其他的app定义的Service有一些细微的差别
+         *      - 1.由于需要其他app访问，所以之前的bindService()使用的隐式调用不在合适，需要在Service定义时定义action
+         *          Intent intent = new Intent();
+         *         intent.setAction("com.jxx.server.service.bind");//Service的action
+         *         intent.setPackage("com.jxx.server");//App A的包名
+         *         bindService(intent, mServerServiceConnection, BIND_AUTO_CREATE);
+         */
+
+        /**
+         *  集合相关
+         *      - List集合
+         *          - List集合在编辑语言中是类库中的一个类，它继承与collection，是一个接口的存在，不能实例化，
+         *            需要实例化一个ArrayList或LinkedList，通俗点就是一张表、目录清单的
+         *          - List接口存储是一组不唯一的，有序的对象 其中元素是可以重复的 有索引，可以很快的进行检索
+         *              - ArrayList ：是底层的数据结构，使用的数组结构
+         *                  - 特点：查询的速度快，但是增删改慢，线程不同步
+         *              - LinkedList ：使用的是链表数据结构
+         *                  - 特点：增删快，但是查询速度慢
+         *              - List 和 array 的区别:
+         *                  - 相同点：
+         *                      - 都可以表示一组同类型的对象
+         *                      - 都使用下标进行搜索
+         *                  - 不同点：
+         *                      - 数组可以储存任何数据类型元素
+         *                      - List不能存储基本的数据类型，必须要经过包装
+         *                      - 数组容量是固定的 list 是可以随数据的变化而变化
+         *                      - 数组效率高 list要维护额外的内容，所有效率相对来说比较低点
+         *                  - 选择使用:
+         *                      - 如果容量固定，优先使用数组，存储的数据类型更多，更高效
+         *                      - 如果容量不能固定，就选择list比较好点
+         *               - ArrayList实现原理 （默认长度是10）
+         *                  - ArrayList是List接口的可变数组非同步实现，并允许包括null在内的所有元素
+         *                  - 底层使用数组实现
+         *                  - 该集合是可变长度数组，数组扩容时，会将老数组中的元素重新拷贝一份到新的数组中，
+         *                    每次数组容量增长大约是其容量的1.5倍，这种操作的代价很高。
+         *                  - 采用了Fail-Fast机制，面对并发的修改时，迭代器很快就会完全失败，而不是冒着在将来某个不确定时间发生任意不确定行为的风险
+         *                  - remove方法会让下标到数组末尾的元素向前移动一个单位，并把最后一位的值置空，方便GC
+         *               - LinkedList实现原理
+         *                  - LinkedList是List接口的双向链表非同步实现，并允许包括null在内的所有元素。
+         *                  - 底层的数据结构是基于双向链表的，该数据结构我们称为节点
+         *                  - 双向链表节点对应的类Node的实例，Node中包含成员变量：prev，next，item。其中，prev是该节点的上一个节点，
+         *                    next是该节点的下一个节点，item是该节点所包含的值。
+         *                  - 它的查找是分两半查找，先判断index是在链表的哪一半，然后再去对应区域查找，这样最多只要遍历链表的一半节点即可找到
+         *      - Map（键值对）
+         *          - Map也是集合的一种，主要是通过键值对的方式进行存储，其中值是可以重复的，键必须是唯一的，也可以是null，
+         *            但只能有一个是空,键值存在单向的一对一关系，可以通过制定的键找到唯一的，确定的值。
+         *          - Map主要的实现类有hashMap hashTable linkedHashMap TerrMap
+         *          - 键就是你要存储数据的编号   值就是你要储存的数据
+         *          - HashMap:
+         *              - 保存数据是先进后出。无序。查询速度比较快，不支持线程同步，但支持多个线程同时写hashmap，但是也存在不好的地方，
+         *                会导致数据不一致，需要同步的话，可以使用Collection的synchronizedMap方法使其同步。
+         *              - HashMap是一个散列集合，其底层是数组+链表结构,主体部分是个长度很长的数组
+         *              - 主体 : Entry数组(实际存key,value的对象)
+         *              - 链表 : 通过next方法指向链表下一个结点
+         *              - 实现原理：
+         *                  - HashMap是基于哈希表的Map接口的非同步实现，允许使用null值和null键，但不保证映射的顺序
+         *                  - 底层使用数组实现，数组中每一项是个单向链表，即数组和链表的结合体；当链表长度大于一定阈值时，
+         *                    链表转换为红黑树，这样减少链表查询时间。
+         *                  - HashMap在底层将key-value当成一个整体进行处理，这个整体就是一个Node对象。
+         *                    HashMap底层采用一个Node[]数组来保存所有的key-value对，当需要存储一个Node对象时，
+         *                    会根据key的hash算法来决定其在数组中的存储位置，在根据equals方法决定其在该数组位置上的链表中的存储位置；
+         *                    当需要取出一个Node时，也会根据key的hash算法找到其在数组中的存储位置，再根据equals方法从该位置上的链表中取出该Node。
+         *                  - HashMap进行数组扩容需要重新计算扩容后每个元素在数组中的位置，很耗性能
+         *                  - hashMap是根据键的hashCode值存储数据，大多数情况下可以直接定位到它的值，因而具有很快的访问速度，但遍历顺序却是不确定的。
+         */
+
 
 
     }
@@ -733,6 +837,23 @@ public class CommonInterviewActivity extends AppCompatActivity {
             // 当服务异常终止时会调用。
             // 注意，unbindService时不会调用
             Log.d("service_","onServiceDisconnected - "+" name:"+name);
+        }
+    };
+
+    ServiceConnection serviceConnectionRemote = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            IMyAidlInterface myAidlInterface = IMyAidlInterface.Stub.asInterface(service);
+            try {
+                Log.d("service_","onServiceConnected - mProcessId:"+myAidlInterface.getProcessId()+" name:"+name);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+
         }
     };
 }

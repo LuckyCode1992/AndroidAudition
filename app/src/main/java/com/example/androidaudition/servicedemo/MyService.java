@@ -1,4 +1,4 @@
-package com.example.androidaudition;
+package com.example.androidaudition.servicedemo;
 
 import android.app.Service;
 import android.content.Intent;
