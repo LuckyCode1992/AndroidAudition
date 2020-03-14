@@ -4,6 +4,9 @@
     package="com.example.androidaudition">
     <!-- 添加网络权限 -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.WRITE_CONTACTS" />
+    <uses-permission android:name="android.permission.READ_SMS" />
 
     <application
         android:allowBackup="true"
@@ -13,8 +16,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".CommonInterviewActivity"></activity>
-        <activity android:name=".demoactivity.ResultActivity"></activity>
+        <activity android:name=".content_provider_demo.SecondActivity"></activity>
+        <activity android:name=".content_provider_demo.ContentProvicerDemoActivity" />
+        <activity android:name=".CommonInterviewActivity" />
+        <activity android:name=".demoactivity.ResultActivity" />
         <activity android:name=".demoactivity.CategoryDemoActivity">
             <intent-filter>
                 <category android:name="android.intent.category.MY_CATEGORY" />
@@ -43,9 +48,16 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".servicedemo.MyService"></service>
-        <service android:name=".servicedemo.MyIntentService"></service>
-        <service android:name=".servicedemo.MyRemoteService" android:process=":remote"></service>
+        <service android:name=".servicedemo.MyService" />
+        <service android:name=".servicedemo.MyIntentService" />
+        <service
+            android:name=".servicedemo.MyRemoteService"
+            android:process=":remote" />
+
+        <provider
+            android:name=".content_provider_demo.MyContentProvider"
+            android:authorities="luckyContentProvider"
+            android:exported="true" />
     </application>
 
 </manifest>

@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.TextView
 import android.widget.Toast
+import com.example.androidaudition.content_provider_demo.ContentProvicerDemoActivity
 import com.example.androidaudition.demoactivity.ResultActivity
 import kotlinx.android.synthetic.main.activity_android_basic.*
 import java.util.*
@@ -172,6 +173,46 @@ class AndroidBasicActivity : AppCompatActivity() {
          *         intent.setPackage("com.jxx.server");//App A的包名
          *         bindService(intent, mServerServiceConnection, BIND_AUTO_CREATE);
          */
+
+        /**
+         *  ContentProvider
+         *      - ContentProvider是Android四大组件之一，其本质上是一个标准化的数据管道，它屏蔽了底层的数据管理和服务等细节，
+         *        以标准化的方式在Android 应用间共享数据
+         *      - 用户可以灵活实现ContentProvider所封装的数据存储以及增删改查等，所有的ContentProvider 必须实现一个对外统一的接口（URI）。
+         *      - contentProvider是android中提供专门进行不同程序数据共享的方式，其底层实现是Binder，contentProvider以表格的形式组织数据，
+         *        而且包含多个表。
+         *      - 1.ContentProvider的工作过程 (见图 content_provider_start.jpg)
+         *          - 一个应用启动入口方法是ActivityThread的main方法，main方法中会创建ActivityThread的实例和主线程的消息队列，
+         *            然后通过attach方法远程调用远程的Ams的attachApplication，并把ApplicationThread对象给Ams。
+         *            ams的attachApplication方法会调用ApplicationThread的bindApplication，
+         *            经过handler传回ActivityThread中处理，即交给handleBindApplication方法，
+         *            此方法会创建Application对象，和加载ContentProvider。
+         *          - 所以Application的onCreate的执行在加载ContentProvider之后
+         *          - ApplicationThread是Binder对象，它的Binder接口是IApplicationThread，主要用于Ams和ActivityThread的之间通信。
+         *          - contentProvider开始后，外界无法直接访问，必须通过AMS根据uri获取对应的ContentProvider的binder接口（IContentProvider），来访问数据。
+         *          - 通过android：multiProcess设置ContentProvider是单实例还是多实例
+         *          - 访问ContentProvider通过ContentResolver，实际上就是ApplicationContentProvider，第一次触发ContentProvider方法，伴随着启动其所在进程。
+         *          - 选query方法，来仔细介绍
+         *              - 1、首先获取IContentProvider对象，（通过acquireProvider方法获取ContentProvider）
+         *              - 2、发送一个进程间请求给AMS让其启动目标ContentProvider，最后通过installProvider修改引用次数
+         *              - 3、AMS首先启动进程，然后启动ContentProvider，具体启动进程的方法是startProcessLocked方法，内部通过Process的start方法完成进程的启动。
+         *              - 4、ActivityThread的attach方法会将Application对象通过AMS的attachApplication方法跨进程传递给AMS，最终会完成ContentProvider创建过程。
+         *              - 5、一个流程：
+         *                  - attachApplication（ams）--> attachApplicationLocked（ams）--> bindApplication（ApplicationThread）
+         *                  ->（发送消息）-> Handler -->handleBindApplication
+         *              - 6、四个步骤：
+         *                  - 创建ContextImpl和Instrumentation
+         *                  - 创建Application对象
+         *                  - 启动当前进程的ContentProvider并调用其OnCreate
+         *                  - 调用Application的onCreate方法
+         */
+
+        btn_content_provider_demo.setOnClickListener {
+            val intent = Intent()
+            intent.setClass(this,ContentProvicerDemoActivity::class.java)
+            startActivity(intent)
+        }
+
     }
 
     fun startForResult() {

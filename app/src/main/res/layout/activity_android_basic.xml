@@ -40,8 +40,8 @@
             <LinearLayout
                 style="@style/layout_style">
                 <Button
-                    android:id="@+id/btn_start_service"
-                    android:text="start_service"
+                    android:id="@+id/btn_content_provider_demo"
+                    android:text="content_provider_demo"
                     style="@style/button_style"/>
             </LinearLayout>
 
