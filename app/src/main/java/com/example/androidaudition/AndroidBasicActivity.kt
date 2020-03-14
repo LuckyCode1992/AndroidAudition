@@ -92,14 +92,92 @@ class AndroidBasicActivity : AppCompatActivity() {
         }
 
         btn_start_for_result.setOnClickListener {
-           startForResult()
+            startForResult()
         }
+
+        /**
+         *  service
+         *      - Service既不是一个线程，Service通常运行在当成宿主进程的主线程中，
+         *        所以在Service中进行一些耗时操作就需要在Service内部开启线程去操作，否则会引发ANR异常。
+         *      - 不是一个单独的进程。除非在清单文件中声明时指定进程名，否则Service所在进程就是application所在进程
+         *      - Service存在的目的有2个:
+         *          - 告诉系统，当前程序需要在后台做一些处理。这意味着，Service可以不需要UI就在后台运行，
+         *            不用管开启它的页面是否被销毁，只要进程还在就可以在后台运行。可以通过startService()方式调用，
+         *            这里需要注意，除非Service手动调用stopService()或者Service内部主动调用了stopSelf()，否则Service一直运行
+         *          - 程序通过Service对外开放某些操作。通过bindService()方式与Service调用，长期连接和交互，Service生命周期和其绑定的组件相关
+         *      - service 的 启动方式 注意：要在清单配置文件中 注册
+         *          - 1.startService
+         *              - Intent intent = new Intent(MainActivity.this, MyService.class)
+         *              - startService（intent）
+         *              - 注意事项
+         *                  - 当调用Service的startService()后
+         *                      - Service首次启动，则先调用onCreate()，在调用onStartCommand()
+         *                      - Service已经启动，则直接调用onStartCommand()
+         *                  - 当调用stopSelf()或者stopService()后，会执行onDestroy(),代表Service生命周期结束
+         *                  - startService方式启动Service不会调用到onBind()。
+         *                    startService可以多次调用，每次调用都会执行onStartCommand()。
+         *                    不管调用多少次startService，只需要调用一次stopService就结束。
+         *                    如果startService后没有调用stopSelf或者stopService，则Service一直存活并运行在后台。
+         *                  - onStartCommand的返回值是一个int值，一共有3种
+         *                      - START_STICKY = 1:service所在进程被kill之后，系统会保留service状态为开始状态。
+         *                        系统尝试重启service，当服务被再次启动，传递过来的intent可能为null，需要注意。
+         *                      - START_NOT_STICKY = 2:service所在进程被kill之后，系统不再重启服务
+         *                      - START_REDELIVER_INTENT = 3:系统自动重启service，并传递之前的intent
+         *                      - 默认返回START_STICKY
+         *          - 2.bindService
+         *              - 通过bindService绑定Service相对startService方式要复杂一点。由于bindService是异步执行的，
+         *                所以需要额外构建一个ServiceConnection对象用与接收bindService的状态，同时还要指定bindService的类型。
+         *              - 使用步骤：
+         *                  - 1.定义用于通信的对象，在Service的onBind()中返回的对象
+         *                  - 2.定义用于接收状体的ServiceConnection
+         *                  - 3.在需要的地方绑定到Service
+         *              - bindService()也可以调用多次，与startService()不同，当发起对象与Service已经成功绑定后，
+         *                不会多次返回ServiceConnection中的回调方法。
+         *              - 通过bindService方式与Service进行绑定后，当没有对象与Service绑定后，Service生命周期结束，
+         *                这个过程包括绑定对象被销毁，或者主动掉调用unbindService()
+         *          - 3.一起调用
+         *              - 当同时调用startService和bindService后，需要分别调用stopService和unbindService，Service才会走onDestroy()
+         *              - 一个Service必须要在既没有和任何Activity关联又处理停止状态的时候才会被销毁。
+         *      - intentService: 为异步而生。
+         *          - 执行某些一次性、异步的操作时，IntentService能很好的满足这个场景。
+         *          - IntentService相比在使用时将不再需要实现onStartCommand(),同时需要实现onHandleIntent()
+         *          - 真正需要我们处理的逻辑就在onHandleIntent()实现，IntentService会内部自动调用stopSelf()关闭自己
+         *
+         */
+        /**
+         *  使用Service实现IPC通信
+         *      - AIDL:Android Interface Definition Language,即Android接口定义语言
+         *      - Service跨进程传递数据需要借助aidl，主要步骤是这样的：
+         *          - 1.编写aidl文件，AS自动生成的java类实现IPC通信的代理
+         *          - 2.继承自己的aidl类，实现里面的方法
+         *          - 3.在onBind()中返回我们的实现类，暴露给外界
+         *          - 需要跟Service通信的对象通过bindService与Service绑定，并在ServiceConnection接收数据
+         *      - 代码实现:
+         *          - 1.新建一个Service
+         *          - 2.在manifest文件中声明我们的Service同时指定运行的进程名,这里并是不只能写remote进程名，你想要进程名都可以
+         *          - 3.新建一个aidl文件用户进程间传递数据
+         *              - AIDL支持的类型：八大基本数据类型、String类型、CharSequence、List、Map、自定义类型
+         *          - 4.实现我们的aidl类
+         *          - 5.在Service的onBind()中返回
+         *          - 6.绑定Service
+         *
+         *
+         */
+        /**
+         *  调用其他app的Service
+         *      - 跟调同app下不同进程下的Service相比，调用其他的app定义的Service有一些细微的差别
+         *      - 1.由于需要其他app访问，所以之前的bindService()使用的隐式调用不在合适，需要在Service定义时定义action
+         *          Intent intent = new Intent();
+         *         intent.setAction("com.jxx.server.service.bind");//Service的action
+         *         intent.setPackage("com.jxx.server");//App A的包名
+         *         bindService(intent, mServerServiceConnection, BIND_AUTO_CREATE);
+         */
     }
 
     fun startForResult() {
         val intent = Intent()
-        intent.setClass(this,ResultActivity::class.java)
-        startActivityForResult(intent,999)
+        intent.setClass(this, ResultActivity::class.java)
+        startActivityForResult(intent, 999)
     }
 
     fun actionDemo() {
@@ -118,37 +196,37 @@ class AndroidBasicActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode== Activity.RESULT_OK){
-            if (requestCode==999){
-                val result =data?.getExtras()?.getString("result")
-                Toast.makeText(this,result,Toast.LENGTH_LONG).show()
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == 999) {
+                val result = data?.getExtras()?.getString("result")
+                Toast.makeText(this, result, Toast.LENGTH_LONG).show()
             }
         }
     }
 
     override fun onStart() {
         super.onStart()
-        Log.d("activity_","A - onStart")
+        Log.d("activity_", "A - onStart")
     }
 
     override fun onResume() {
         super.onResume()
-        Log.d("activity_","A - onResume")
+        Log.d("activity_", "A - onResume")
     }
 
     override fun onPause() {
         super.onPause()
-        Log.d("activity_","A - onPause")
+        Log.d("activity_", "A - onPause")
     }
 
     override fun onStop() {
         super.onStop()
-        Log.d("activity_","A - onStop")
+        Log.d("activity_", "A - onStop")
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.d("activity_","A - onDestroy")
+        Log.d("activity_", "A - onDestroy")
     }
 
 }

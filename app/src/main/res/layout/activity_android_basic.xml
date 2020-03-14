@@ -40,35 +40,58 @@
             <LinearLayout
                 style="@style/layout_style">
                 <Button
-                    android:id="@+id/btn_cachedThreadPoolDemo"
-                    android:text="cachedThreadPoolDemo"
+                    android:id="@+id/btn_start_service"
+                    android:text="start_service"
                     style="@style/button_style"/>
             </LinearLayout>
 
             <LinearLayout
                 style="@style/layout_style">
                 <Button
-                    android:id="@+id/btn_fixedThreadPoolDemo"
-                    android:text="fixedThreadPoolDemo"
+                    android:id="@+id/btn_stop_service"
+                    android:text="stop_service"
                     style="@style/button_style"/>
             </LinearLayout>
 
             <LinearLayout
                 style="@style/layout_style">
                 <Button
-                    android:id="@+id/btn_scheduledThreadPoolDemo"
-                    android:text="scheduledThreadPoolDemo"
+                    android:id="@+id/btn_bind_service"
+                    android:text="bind_service"
                     style="@style/button_style"/>
             </LinearLayout>
 
             <LinearLayout
                 style="@style/layout_style">
                 <Button
-                    android:id="@+id/btn_singleThreadExecutorDemo"
-                    android:text="singleThreadExecutorDemo"
+                    android:id="@+id/btn_unbind_service"
+                    android:text="unbind_service"
                     style="@style/button_style"/>
             </LinearLayout>
 
+            <LinearLayout
+                style="@style/layout_style">
+                <Button
+                    android:id="@+id/btn_start_intent_service"
+                    android:text="start_intent_service"
+                    style="@style/button_style"/>
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/layout_style">
+                <Button
+                    android:id="@+id/btn_bind_remote_service"
+                    android:text="bind_remote_service"
+                    style="@style/button_style"/>
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/layout_style">
+              <WebView
+                  android:id="@+id/web"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"/>
+            </LinearLayout>
 
 
         </LinearLayout>
