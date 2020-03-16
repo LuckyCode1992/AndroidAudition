@@ -213,6 +213,27 @@ class AndroidBasicActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        /**
+         *  BroadcastReceiver(广播接收器)
+         *      - 广播，是一个全局的监听器，属于Android四大组件之一
+         *      - Android 广播分为两个角色：广播发送者、广播接收者
+         *      - 广播接收器 负责 监听 / 接收 应用 App 发出的广播消息，并 做出响应
+         *      - 应用场景：
+         *          - Android不同组件间的通信（含 ：应用内 / 不同应用之间）
+         *          - 多线程通信
+         *          - 与 Android 系统在特定情况下的通信（电话呼入时、网络可用时）
+         *      - 实现原理
+         *          - 采用的模型
+         *              - Android中的广播使用了设计模式中的观察者模式：基于消息的发布 / 订阅事件模型
+         *              - Android将广播的发送者 和 接收者 解耦，使得系统方便集成，更易扩展
+         *              - 模型中有3个角色：
+         *                  - 消息订阅者（广播接收者）
+         *                  - 消息发布者（广播发布者）
+         *                  - 消息中心（AMS，即Activity Manager Service）
+         *              - 原理描述：
+         *                  - 1.广播接收者，通过binder机制在AMS中注册
+         */
+
     }
 
     fun startForResult() {
