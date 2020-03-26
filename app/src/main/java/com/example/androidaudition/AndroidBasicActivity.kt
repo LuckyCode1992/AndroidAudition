@@ -16,9 +16,8 @@ class AndroidBasicActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d("activity_", "A - onCreate")
         setContentView(R.layout.activity_android_basic)
-
-
         /**
          *  1.activity(活动)
          *      - Activity 是一个应用组件，用户可与其提供的屏幕进行交互，以执行拨打电话、拍摄照片、发送电子邮件或查看地图等操作。
@@ -214,7 +213,7 @@ class AndroidBasicActivity : AppCompatActivity() {
         }
 
         /**
-         *  BroadcastReceiver(广播接收器)
+         *  broadcastreceiver(广播接收器)
          *      - 广播，是一个全局的监听器，属于Android四大组件之一
          *      - Android 广播分为两个角色：广播发送者、广播接收者
          *      - 广播接收器 负责 监听 / 接收 应用 App 发出的广播消息，并 做出响应
@@ -230,8 +229,59 @@ class AndroidBasicActivity : AppCompatActivity() {
          *                  - 消息订阅者（广播接收者）
          *                  - 消息发布者（广播发布者）
          *                  - 消息中心（AMS，即Activity Manager Service）
-         *              - 原理描述：
+         *              - 原理描述：见图 broadcastreceiver.png
          *                  - 1.广播接收者，通过binder机制在AMS中注册
+         *                  - 2.广播发送者，通过binder机制向AMS发送广播
+         *                  - 3.AMS 根据广播发送者 要求，在已注册列表中，寻找合适的广播接收者（寻找依据：InterFilter/Permission）
+         *                  - 4.AMS 将广播 发送到 合适的 广播接收者相应的消息循环队列中
+         *                  - 5.广播接收者 通过 消息循环 拿到此广播 并回调 onReceive()
+         *                  - 注意：广播发送者 和 广播接收者 的执行 是异步。广播发送者 只管发 不管接收者收到与否。
+         *      - 使用流程：
+         *          - 1.自定义广播接收者BroadcastReceiver
+         *              - 继承BroadcastReceive基类 必须实现抽象方法onReceive()方法
+         *                  - 广播接收器接收到相应广播后，会自动回调 onReceive() 方法
+         *                  - 通常情况下，onReceive方法会涉及 与 其他组件之间的交互，如发送Notification、启动Service等
+         *                  - 默认情况下，广播接收器运行在 UI 线程，因此，onReceive()方法不能执行耗时操作，否则将导致ANR
+         *          - 2.广播接收器注册
+         *              - 静态注册
+         *                  - 注册方式：在AndroidManifest.xml里通过<receive>标签声明
+         *                      <receiver
+         *                          此broadcastReceiver能否接收其他App的发出的广播
+         *                          android:enabled=["true" | "false"]
+         *                          默认值是由receiver中有无intent-filter决定的：如果有intent-filter，默认值为true，否则为false
+         *                          android:exported=["true" | "false"]
+         *                          android:icon="drawable resource"
+         *                          android:label="string resource"
+         *                          继承BroadcastReceiver子类的类名
+         *                          android:name=".xx"
+         *                          具有相应权限的广播发送者发送的广播才能被此BroadcastReceiver所接收
+         *                          android:permission="string"
+         *                          BroadcastReceiver运行所处的进程
+         *                          默认为app的进程，可以指定独立的进程
+         *                          注：Android四大基本组件都可以通过此属性指定自己的独立进程
+         *                           android:process="string" >
+         *                           用于指定此广播接收器将接收的广播类型
+         *                            <intent-filter>
+         *                                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+         *                             </intent-filter>
+         *                         </receiver>
+         *                  - 当此 App首次启动时，系统会自动实例化mBroadcastReceiver类，并注册到系统中
+         *              - 动态注册
+         *                  - 注册方式：在代码中调用Context.registerReceiver（）方法
+         *                  - 动态广播最好在Activity 的 onResume()注册、onPause()注销
+         *                      - 在onResume()注册、onPause()注销是因为onPause()在App死亡前一定会被执行，从而保证广播在App死亡前一定会被注销，从而防止内存泄露。
+         *                  - 对于动态广播，有注册就必然得有注销，否则会导致内存泄露
+         *                      - 重复注册、重复注销也不允许
+         *              - 两种注册方式的区别：
+         *                  - 使用方式：
+         *                      - 静态注册 是 AndroidManifest.xml 中
+         *                      - 动态注册 是 Context.registerReceiver（）
+         *                  - 特点：
+         *                      - 静态注册 常驻 不受任何组件生命周期 影响 ，耗电 占内存
+         *                      - 动态注册 非常驻 受组件生命周期影响，灵活 省电
+         *                  - 应用场景：
+         *                      - 静态注册：需要时刻监听广播，如电量，网络状态
+         *                      - 动态注册：特定时刻监听
          */
 
     }
