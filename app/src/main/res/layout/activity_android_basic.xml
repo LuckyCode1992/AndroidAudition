@@ -1,98 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".AndroidBasicActivity">
+                                                   xmlns:app="http://schemas.android.com/apk/res-auto"
+                                                   xmlns:tools="http://schemas.android.com/tools"
+                                                   android:layout_width="match_parent"
+                                                   android:layout_height="match_parent"
+                                                   tools:context=".AndroidBasicActivity">
     <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <LinearLayout
-            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
+        <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
             <LinearLayout
-                style="@style/layout_style">
+                    style="@style/layout_style">
                 <Button
-                    android:id="@+id/btn_action_demo"
-                    android:text="action_demo"
-                    style="@style/button_style"/>
+                        android:id="@+id/btn_action_demo"
+                        android:text="action_demo"
+                        style="@style/button_style"/>
             </LinearLayout>
 
             <LinearLayout
-                style="@style/layout_style">
+                    style="@style/layout_style">
                 <Button
-                    android:id="@+id/btn_category_demo"
-                    android:text="category_demo"
-                    style="@style/button_style"/>
+                        android:id="@+id/btn_category_demo"
+                        android:text="category_demo"
+                        style="@style/button_style"/>
             </LinearLayout>
 
             <LinearLayout
-                style="@style/layout_style">
+                    style="@style/layout_style">
                 <Button
-                    android:id="@+id/btn_start_for_result"
-                    android:text="start_for_result"
-                    style="@style/button_style"/>
+                        android:id="@+id/btn_start_for_result"
+                        android:text="start_for_result"
+                        style="@style/button_style"/>
             </LinearLayout>
 
             <LinearLayout
-                style="@style/layout_style">
+                    style="@style/layout_style">
                 <Button
-                    android:id="@+id/btn_content_provider_demo"
-                    android:text="content_provider_demo"
-                    style="@style/button_style"/>
+                        android:id="@+id/btn_content_provider_demo"
+                        android:text="content_provider_demo"
+                        style="@style/button_style"/>
             </LinearLayout>
 
             <LinearLayout
-                style="@style/layout_style">
+                    style="@style/layout_style">
                 <Button
-                    android:id="@+id/btn_stop_service"
-                    android:text="stop_service"
-                    style="@style/button_style"/>
+                        android:id="@+id/btn_stop_service"
+                        android:text="stop_service"
+                        style="@style/button_style"/>
             </LinearLayout>
 
             <LinearLayout
-                style="@style/layout_style">
+                    style="@style/layout_style">
                 <Button
-                    android:id="@+id/btn_bind_service"
-                    android:text="bind_service"
-                    style="@style/button_style"/>
+                        android:id="@+id/btn_bind_service"
+                        android:text="bind_service"
+                        style="@style/button_style"/>
             </LinearLayout>
 
             <LinearLayout
-                style="@style/layout_style">
+                    style="@style/layout_style">
                 <Button
-                    android:id="@+id/btn_unbind_service"
-                    android:text="unbind_service"
-                    style="@style/button_style"/>
+                        android:id="@+id/btn_unbind_service"
+                        android:text="unbind_service"
+                        style="@style/button_style"/>
             </LinearLayout>
 
             <LinearLayout
-                style="@style/layout_style">
+                    style="@style/layout_style">
                 <Button
-                    android:id="@+id/btn_start_intent_service"
-                    android:text="start_intent_service"
-                    style="@style/button_style"/>
+                        android:id="@+id/btn_start_intent_service"
+                        android:text="start_intent_service"
+                        style="@style/button_style"/>
             </LinearLayout>
 
             <LinearLayout
-                style="@style/layout_style">
+                    style="@style/layout_style">
                 <Button
-                    android:id="@+id/btn_bind_remote_service"
-                    android:text="bind_remote_service"
-                    style="@style/button_style"/>
+                        android:id="@+id/btn_bind_remote_service"
+                        android:text="bind_remote_service"
+                        style="@style/button_style"/>
             </LinearLayout>
-
-            <LinearLayout
-                style="@style/layout_style">
-              <WebView
-                  android:id="@+id/web"
-                  android:layout_width="match_parent"
-                  android:layout_height="wrap_content"/>
-            </LinearLayout>
-
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

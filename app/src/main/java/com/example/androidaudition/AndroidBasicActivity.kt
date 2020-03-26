@@ -1,12 +1,17 @@
 package com.example.androidaudition
 
 import android.app.Activity
+import android.content.BroadcastReceiver
 import android.content.Intent
+import android.content.IntentFilter
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.TextView
 import android.widget.Toast
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.example.androidaudition.broadcastReceive.BroadCastReceiver2
+import com.example.androidaudition.broadcastReceive.BroadCastReceiver3
 import com.example.androidaudition.content_provider_demo.ContentProvicerDemoActivity
 import com.example.androidaudition.demoactivity.ResultActivity
 import kotlinx.android.synthetic.main.activity_android_basic.*
@@ -208,12 +213,12 @@ class AndroidBasicActivity : AppCompatActivity() {
 
         btn_content_provider_demo.setOnClickListener {
             val intent = Intent()
-            intent.setClass(this,ContentProvicerDemoActivity::class.java)
+            intent.setClass(this, ContentProvicerDemoActivity::class.java)
             startActivity(intent)
         }
 
         /**
-         *  broadcastreceiver(广播接收器)
+         *  BroadCastReceiver(广播接收器)
          *      - 广播，是一个全局的监听器，属于Android四大组件之一
          *      - Android 广播分为两个角色：广播发送者、广播接收者
          *      - 广播接收器 负责 监听 / 接收 应用 App 发出的广播消息，并 做出响应
@@ -282,6 +287,65 @@ class AndroidBasicActivity : AppCompatActivity() {
          *                  - 应用场景：
          *                      - 静态注册：需要时刻监听广播，如电量，网络状态
          *                      - 动态注册：特定时刻监听
+         *          - 3. 广播发送者向AMS发送广播
+         *              - 广播的发送
+         *                  - 广播 是 用”意图（Intent）“标识
+         *                  - 定义广播的本质 = 定义广播所具备的“意图（Intent）”
+         *                  - 广播发送 = 广播发送者 将此广播的“意图（Intent）”通过sendBroadcast（）方法发送出去
+         *              - 广播的类型
+         *                  - 普通广播（Normal Broadcast）
+         *                      - 开发者自身定义 intent的广播（最常用）
+         *                          Intent intent = new Intent();
+         *                          //对应BroadcastReceiver中intentFilter的action
+         *                          intent.setAction(BROADCAST_ACTION);
+         *                          //发送广播
+         *                          sendBroadcast(intent);
+         *                      - 若被注册了的广播接收者中注册时intentFilter的action与上述匹配，则会接收此广播（即进行回调onReceive()）。
+         *                           <intent-filter>
+         *                              <action android:name="BROADCAST_ACTION" />
+         *                           </intent-filter>
+         *                      - 若发送广播有相应权限，那么广播接收者也需要相应权限
+         *                  - 系统广播（System Broadcast）
+         *                      - Android中内置了多个系统广播：只要涉及到手机的基本操作（如开机、网络状态变化、拍照等等），都会发出相应的广播
+         *                      - 每个广播都有特定的Intent - Filter（包括具体的action）
+         *                      - 注：当使用系统广播时，只需要在注册广播接收者时定义相关的action即可，并不需要手动发送广播，当系统有相关操作时会自动进行系统广播
+         *                  - 有序广播（Ordered Broadcast）
+         *                      - 定义:
+         *                          - 发送出去的广播被广播接收者按照先后顺序接收
+         *                          - 有序是针对广播接收者而言的
+         *                      - 广播接受者接收广播的顺序规则（同时面向静态和动态注册的广播接受者）
+         *                          - 按照Priority属性值从大-小排序
+         *                          - Priority属性相同者，动态注册的广播优先
+         *                      - 特点：
+         *                          - 接收广播按顺序接收
+         *                          - 先接收的广播接收者可以对广播进行截断，即后接收的广播接收者不再接收到此广播
+         *                          - 先接收的广播接收者可以对广播进行修改，那么后接收的广播接收者将接收到被修改后的广播
+         *                      - 有序广播的使用过程与普通广播非常类似，差异仅在于广播的发送方式：sendOrderedBroadcast(intent);
+         *                  - 粘性广播（Sticky Broadcast）
+         *                      - 由于在Android5.0 & API 21中已经失效，所以不建议使用，在这里也不作过多的总结
+         *                  - App应用内广播（Local Broadcast）
+         *                      - 背景：
+         *                          - Android中的广播可以跨App直接通信（exported对于有intent-filter情况下默认值为true）
+         *                      - 冲突：
+         *                          - 其他App针对性发出与当前App intent-filter相匹配的广播，由此导致当前App不断接收广播并处理；
+         *                          - 其他App注册与当前App一致的intent-filter用于接收广播，获取广播具体信息，即会出现安全性 & 效率性的问题
+         *                          - 解决方案：
+         *                              - 使用App应用内广播（Local Broadcast）
+         *                                  - App应用内广播可理解为一种局部广播，广播的发送者和接收者都同属于一个App
+         *                                  - 相比于全局广播（普通广播），App应用内广播优势体现在：安全性高 & 效率高
+         *                              - 具体使用1 - 将全局广播设置成局部广播
+         *                                  - 1.注册广播时将exported属性设置为false，使得非本App内部发出的此广播不被接收
+         *                                  - 2.在广播发送和接收时，增设相应权限permission，用于权限验证
+         *                                  - 3.发送广播时指定该广播接收器所在的包名，此广播将只会发送到此包中的App内与之相匹配的有效广播接收器中
+         *                                      - 通过intent.setPackage(packageName)指定报名
+         *                              - 具体使用2 - 使用封装好的LocalBroadcastManager类
+         *                                  - 使用方式上与全局广播几乎相同，只是注册/取消注册广播接收器和发送广播时将参数的context变成了LocalBroadcastManager的单一实例
+         *                                  - 注：对于LocalBroadcastManager方式发送的应用内广播，只能通过LocalBroadcastManager动态注册，不能静态注册
+         *              - 特别注意
+         *                  - 对于静态注册（全局+应用内广播），回调onReceive(context, intent)中的context返回值是：ReceiverRestrictedContext
+         *                  - 对于全局广播的动态注册，回调onReceive(context, intent)中的context返回值是：Activity Context；
+         *                  - 对于应用内广播的动态注册（LocalBroadcastManager方式），回调onReceive(context, intent)中的context返回值是：Application Context。
+         *                  - 对于应用内广播的动态注册（非LocalBroadcastManager方式），回调onReceive(context, intent)中的context返回值是：Activity Context；
          */
 
     }
@@ -324,11 +388,58 @@ class AndroidBasicActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         Log.d("activity_", "A - onResume")
+        registerReceiverNor()
+        registerReceiverApp()
+        sendBroadCastApp()
+    }
+
+    private fun sendBroadCastApp() {
+        //发送应用内广播
+        val intent =  Intent()
+        intent.action = "ACTION_APP_NEI"
+        localBroadcastManager.sendBroadcast(intent)
+    }
+
+    lateinit var receiver2: BroadCastReceiver2
+    private fun registerReceiverNor() {
+        // 1. 实例化BroadcastReceiver子类 &  IntentFilter
+        receiver2 = BroadCastReceiver2()
+        val intentFilter = IntentFilter()
+        // 2. 设置接收广播的类型
+        intentFilter.addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED)
+        // 3. 动态注册：调用Context的registerReceiver（）方法
+        registerReceiver(receiver2, intentFilter)
+    }
+
+    lateinit var receiver3: BroadCastReceiver3
+    lateinit var localBroadcastManager: LocalBroadcastManager
+    private fun registerReceiverApp() {
+        //注册应用内广播接收器
+        //步骤1：实例化BroadcastReceiver子类 & IntentFilter mBroadcastReceiver
+        receiver3 = BroadCastReceiver3()
+        val intentFilter = IntentFilter()
+        //步骤2：实例化LocalBroadcastManager的实例
+        localBroadcastManager = LocalBroadcastManager.getInstance(this)
+        //步骤3：设置接收广播的类型
+        intentFilter.addAction("ACTION_APP_NEI")
+        //步骤4：调用LocalBroadcastManager单一实例的registerReceiver（）方法进行动态注册
+        localBroadcastManager.registerReceiver(receiver3, intentFilter)
+    }
+
+    private fun unRegisterReceiverApp() {
+        //取消注册应用内广播接收器
+        localBroadcastManager.unregisterReceiver(receiver3)
+    }
+
+    private fun unRegisterReceiver(receiver: BroadcastReceiver) {
+        unregisterReceiver(receiver)
     }
 
     override fun onPause() {
         super.onPause()
         Log.d("activity_", "A - onPause")
+        unRegisterReceiver(receiver2)
+        unRegisterReceiverApp()
     }
 
     override fun onStop() {
