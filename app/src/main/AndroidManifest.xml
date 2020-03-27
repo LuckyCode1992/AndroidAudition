@@ -19,7 +19,7 @@
         <activity android:name=".content_provider_demo.SecondActivity"></activity>
         <activity android:name=".content_provider_demo.ContentProvicerDemoActivity"/>
         <activity android:name=".CommonInterviewActivity"/>
-        <activity android:name=".demoactivity.ResultActivity"/>
+        <activity android:name=".demoactivity.ResultActivity" android:configChanges="orientation|screenSize"/>
         <activity android:name=".demoactivity.CategoryDemoActivity">
             <intent-filter>
                 <category android:name="android.intent.category.MY_CATEGORY"/>

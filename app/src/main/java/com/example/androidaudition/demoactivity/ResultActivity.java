@@ -1,5 +1,8 @@
 package com.example.androidaudition.demoactivity;
 
+import android.content.res.Configuration;
+import android.os.PersistableBundle;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -25,6 +28,18 @@ public class ResultActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        Log.d("activity_","B - onConfigurationChanged");
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Log.d("activity_","B - onSaveInstanceState1");
     }
 
     @Override

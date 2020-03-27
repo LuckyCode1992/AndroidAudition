@@ -49,7 +49,17 @@ class AndroidBasicActivity : AppCompatActivity() {
          *            例如：用户按下Home键（锁屏）或者打开新Activity再返回这个Activity
          *
          *          - Aactivity 跳转到Bactivity的过程中，生命周期
-         *              -
+         *              - A onPause -> B onCreate -> B onStart -> B onResume -> onStop
+         *          - Aactivity 跳转到Bactivity 后 点返回键
+         *              - B onPause -> A onStart -> A onResume -> B onStop -> B onDestroy
+         *          - home键：
+         *              - 退到后台：onPause -> onStop
+         *              - 重回前台: onStart -> onResume
+         *          - 横竖屏切换
+         *              - 默认情况下：
+         *                  - onPause -> onStop -> onSaveInstanceState -> onDestroy -> onCreate -> onStart -> onResume
+         *              - 配置 android:configChanges="orientation"  只要含有 orientation 就可
+         *                  - 只执行 onConfigurationChanged
          *      - 1.3 启动模式
          *          - standard：
          *              - Standard模式是Android的默认启动模式，你不在配置文件中做任何设置，那么这个Activity就是standard模式，
@@ -395,7 +405,7 @@ class AndroidBasicActivity : AppCompatActivity() {
 
     private fun sendBroadCastApp() {
         //发送应用内广播
-        val intent =  Intent()
+        val intent = Intent()
         intent.action = "ACTION_APP_NEI"
         localBroadcastManager.sendBroadcast(intent)
     }
