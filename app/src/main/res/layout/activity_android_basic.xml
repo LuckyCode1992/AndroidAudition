@@ -85,6 +85,14 @@
                         style="@style/button_style"/>
             </LinearLayout>
 
+            <LinearLayout
+                    style="@style/layout_style">
+                <Button
+                        android:id="@+id/btn_fragment"
+                        android:text="fragment demo"
+                        style="@style/button_style"/>
+            </LinearLayout>
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 

@@ -13,6 +13,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.androidaudition.broadcastReceive.BroadCastReceiver2
 import com.example.androidaudition.broadcastReceive.BroadCastReceiver3
 import com.example.androidaudition.content_provider_demo.ContentProvicerDemoActivity
+import com.example.androidaudition.demoactivity.FragmentDemoActivity
 import com.example.androidaudition.demoactivity.ResultActivity
 import kotlinx.android.synthetic.main.activity_android_basic.*
 import java.util.*
@@ -357,6 +358,60 @@ class AndroidBasicActivity : AppCompatActivity() {
          *                  - 对于应用内广播的动态注册（LocalBroadcastManager方式），回调onReceive(context, intent)中的context返回值是：Application Context。
          *                  - 对于应用内广播的动态注册（非LocalBroadcastManager方式），回调onReceive(context, intent)中的context返回值是：Activity Context；
          */
+
+        /**
+         *  Fragment
+         *      - Fragment 是什么
+         *          - public class Fragment implements ComponentCallbacks, OnCreateContextMenuListener {...}
+         *          - Fragment 没有继承任何类，只是实现了这两个接口，第二个不太重要，第一个是在内存不足时可以收到回调
+         *          - 生命周期方法：fragment_life.png
+         *              - onAttach(Context)
+         *                  - onAttach() 是一个 Fragment 和它的 Context 关联时第一个调用的方法
+         *                  - 可以获得对应的 Context 或者 Activity
+         *              - onCreate(Bundle)
+         *                  - onCreate() 在 onAttach() 后调用，用于做一些初始化操作
+         *                  - 需要注意的是，Fragment 的 onCreate() 调用时关联的 Activity 可能还没创建好，所以这里不要有依赖外部 Activity 布局的操作
+         *                  - 如果有依赖 Activity 的操作，可以放在 onActivityCreate()
+         *              - onCreateView(LayoutInflater, ViewGroup, Bundle)
+         *                  - 在 onCreate() 后就会执行 onCreateView()，这个方法返回一个 View，默认返回为 null。
+         *                  - 当我们需要在 Fragment 中显示布局时，需要重写这个方法，返回要显示的布局
+         *                  - 后面布局销毁时就会调用 onDestroyView()
+         *              - onViewCreated
+         *                  - onViewCreate() 不是生命周期中的方法，但是却很有用
+         *                  - 它会在 onCreateView() 返回后立即执行
+         *                  - 参数中的 view 就是之前创建的 View，因此我们可以在 onViewCreate() 中进行布局的初始化（比如 设置button）
+         *              - onActivityCreated(Bundle)
+         *                  - onActivityCreated() 会在 Fragment 关联的 Activity 创建好、Fragment 的布局结构初始化完成后调用
+         *                  - 可以在这个方法里做些和布局、状态恢复有关的操作
+         *              - onViewStateRestored(Bundle)
+         *                  - onViewStateRestored() 方法会在 onActivityCreated() 结束后调用，
+         *                    用于一个 Fragment 在从旧的状态恢复时，获取状态 saveInstanceState 恢复状态，比如恢复一个 check box 的状态
+         *              - onStart()
+         *                  - onStart() 当 Fragment 可见时调用，同步于 Activity 的 onStart()
+         *              - onResume()
+         *                  - onResume() 当 Fragment 可见并且可以与用户交互时调用 ，和 Activity 的 onResume() 同步
+         *              - onPause()
+         *                  - onPause() 当 Fragment 不再可见时调用 和 Activity 的 onPause() 同步
+         *              - onStop()
+         *                  - onStop() 当 Fragment 不再启动时调用，和 Activity.onStop() 一致
+         *              - onDestroyView()
+         *                  - 当 onCreateView() 返回的布局（不论是不是 null）从 Fragment 中解除绑定时调用 onDestroyView()
+         *              - onDestroy()
+         *                  - 当 Fragment 不再使用时会调用 onDestroy()，它是一个 Fragment 生命周期的倒数第二步
+         *              - onDetach()
+         *                  - Fragment 生命周期的最后一个方法，当 Fragment 不再和一个 Activity 绑定时调用
+         *                  - Fragment 的 onDestroyView(), onDestroy(), onDetach() 三个对应 Activity 的 onDestroyed() 方法
+         *      - Fragment 的使用
+         *      - FragmentManager
+         *      - 事务
+         *      - 总结
+         */
+
+        btn_fragment.setOnClickListener {
+            val intent = Intent()
+            intent.setClass(this,FragmentDemoActivity::class.java)
+            startActivity(intent)
+        }
 
     }
 
