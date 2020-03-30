@@ -486,6 +486,17 @@ class AndroidBasicActivity : AppCompatActivity() {
          *              - FragmentTransaction 定义了对 Fragment 添加、替换、隐藏等操作，还有四种提交方法 具体实现是在 BackStackRecord 中
          */
 
+        /**
+         *  AlertDialog、PopupWindow 与 Activity 之间区别
+         *      - AlertDialog 是非阻塞式对话框；而PopupWindow 是阻塞式对话框
+         *      - AlertDialog 弹出时，后台还可以做事情；PopupWindow 弹出时，程序会等待，
+         *        在PopupWindow 退出前，程序一直等待，只有当我们调用了 dismiss() 方法的后，PopupWindow 退出，程序才会向下执行
+         *      - AlertDialog 和 PopupWindow 的本质区别在于有没有新建一个 window，PopupWindow 没有新建，而是通过 WMS 将 View 加到 DecorView；
+         *        Dialog 是新建了一个 window (PhoneWindow)，相当于走了一遍 Activity 中创建 window 的流程。
+         */
+
+
+
         btn_fragment.setOnClickListener {
             val intent = Intent()
             intent.setClass(this,FragmentDemoActivity::class.java)
