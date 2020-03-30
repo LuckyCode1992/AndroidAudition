@@ -34,6 +34,15 @@
         </LinearLayout>
 
         <LinearLayout
+                android:orientation="vertical"
+                style="@style/layout_style">
+            <Button
+                    android:id="@+id/btn_java_advanced"
+                    android:text=" java进阶知识点"
+                    style="@style/button_style"/>
+        </LinearLayout>
+
+        <LinearLayout
             android:orientation="vertical"
             style="@style/layout_style">
             <Button

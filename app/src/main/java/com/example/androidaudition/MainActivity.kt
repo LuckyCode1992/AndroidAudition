@@ -32,6 +32,10 @@ class MainActivity : AppCompatActivity() {
             intent.setClass(this,ThreadsActivity::class.java)
             startActivity(intent)
         }
+        btn_java_advanced.setOnClickListener {
+            intent.setClass(this,JavaAdvancedActivity::class.java)
+            startActivity(intent)
+        }
 
     }
 }
