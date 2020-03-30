@@ -402,9 +402,88 @@ class AndroidBasicActivity : AppCompatActivity() {
          *                  - Fragment 生命周期的最后一个方法，当 Fragment 不再和一个 Activity 绑定时调用
          *                  - Fragment 的 onDestroyView(), onDestroy(), onDetach() 三个对应 Activity 的 onDestroyed() 方法
          *      - Fragment 的使用
+         *          - 1.创建 Fragment
+         *          - 2.获取 FragmentManager
+         *          - 3.调用事务，添加、替换
+         *          - getSupportFragmentManager()
+         *              .beginTransaction()
+         *              .replace(R.id.fl_content, fragment)
+         *              .commitAllowingStateLoss() (不使用commit)
          *      - FragmentManager
+         *          - public abstract class FragmentManager {...}
+         *          - FragmentManager 是一个抽象类，定义了一些和 Fragment 相关的操作和内部类/接口。
+         *          - 定义的操作：
+         *              // 开启一系列对 Fragments 的操作
+         *              public abstract FragmentTransaction beginTransaction();
+         *
+         *              //FragmentTransaction.commit() 是异步执行的，如果你想立即执行，可以调用这个方法 (几乎没用到)
+         *              public abstract boolean executePendingTransactions();
+         *
+         *              // 根据 ID 找到从 XML 解析出来的或者事务中添加的 Fragment
+         *              // 首先会找添加到 FragmentManager 中的，找不到就去回退栈里找
+         *              public abstract Fragment findFragmentById(@IdRes int id);
+         *
+         *              // 跟上面的类似，不同的是使用 tag 进行查找
+         *              public abstract Fragment findFragmentByTag(String tag);
+         *
+         *              // 弹出回退栈中栈顶的 Fragment，异步执行的
+         *              public abstract void popBackStack();
+         *
+         *              // 立即弹出回退栈中栈顶的，直接执行哦
+         *              public abstract boolean popBackStackImmediate();
+         *
+         *              // 返回栈顶符合名称的，如果传入的 name 不为空，在栈中间找到了 Fragment，那将弹出这个 Fragment 上面的所有 Fragment
+         *              // 有点类似启动模式的 singleTask 的感觉
+         *              // 如果传入的 name 为 null，那就和 popBackStack() 一样了
+         *              // 异步执行
+         *              public abstract void popBackStack(String name, int flags)
+         *
+         *              // 同步版的上面
+         *              public abstract boolean popBackStackImmediate(String name, int flags);
+         *
+         *              // 和使用 name 查找、弹出一样
+         *              // 不同的是这里的 id 是 FragmentTransaction.commit() 返回的 id
+         *              public abstract void popBackStack(int id, int flags);
+         *              //同步版本
+         *              public abstract boolean popBackStackImmediate(int id, int flags);
+         *
+         *              // 获取回退栈中的元素个数
+         *              public abstract int getBackStackEntryCount();
+         *
+         *              // 根据索引获取回退栈中的某个元素
+         *              public abstract BackStackEntry getBackStackEntryAt(int index);
+         *
+         *              // 获取 manager 中所有添加进来的 Fragment
+         *              public abstract List<Fragment> getFragments();
+         *          - FragmentManager 是一个抽象类，它定义了对一个 Activity/Fragment 中 添加进来的 Fragment 列表、Fragment 回退栈的操作、管理
+         *
          *      - 事务
+         *          - BackStackRecord 继承了 FragmentTransaction：
+         *              - final class BackStackRecord extends FragmentTransaction implements
+         *                  FragmentManager.BackStackEntry, FragmentManagerImpl.OpGenerator {...}
+         *              - FragmentTransaction add,remove,show,hide replace 等方法都是此类的
+         *              - 事务的四种提交方式
+         *                  - commit()
+         *                      - commit() 在主线程中异步执行，其实也是 Handler 抛出任务，等待主线程调度执行。
+         *                      - 注意 :commit() 需要在宿主 Activity 保存状态之前调用，否则会报错。
+         *                              这是因为如果 Activity 出现异常需要恢复状态，在保存状态之后的 commit() 将会丢失，这和调用的初衷不符，所以会报错
+         *                  - commitAllowingStateLoss()  （常用）
+         *                      - commitAllowingStateLoss() 也是异步执行，但它的不同之处在于，允许在 Activity 保存状态之后调用，也就是说它遇到状态丢失不会报错。
+         *                  - commitNow()
+         *                      - commitNow() 是同步执行的，立即提交任务
+         *                      - 前面提到 FragmentManager.executePendingTransactions() 也可以实现立即提交事务。
+         *                        但我们一般建议使用 commitNow(), 因为另外那位是一下子执行所有待执行的任务，可能会把当前所有的事务都一下子执行了，这有可能有副作用。
+         *                      - 和 commit() 一样，commitNow() 也必须在 Activity 保存状态前调用，否则会抛异常
+         *                  - commitNowAllowingStateLoss()
+         *                      - 同步执行的 commitAllowingStateLoss()。
+         *              - 事务真正实现/回退栈 BackStackRecord
+         *                  - BackStackRecord 既是对 Fragment 进行操作的事务的真正实现，也是 FragmentManager 中的回退栈的实现
          *      - 总结
+         *          - Fragment、FragmentManager、FragmentTransaction 关系
+         *              - Fragment 其实是对 View 的封装，它持有 view, containerView, fragmentManager, childFragmentManager 等信息
+         *              - FragmentManager 是一个抽象类，它定义了对一个 Activity/Fragment 中 添加进来的 Fragment 列表、Fragment 回退栈的操作、管理方法
+         *                  还定义了获取事务对象的方法,具体实现在 FragmentImpl 中
+         *              - FragmentTransaction 定义了对 Fragment 添加、替换、隐藏等操作，还有四种提交方法 具体实现是在 BackStackRecord 中
          */
 
         btn_fragment.setOnClickListener {
