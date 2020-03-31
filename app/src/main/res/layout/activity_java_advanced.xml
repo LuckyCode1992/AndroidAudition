@@ -29,8 +29,8 @@
                     android:orientation="vertical"
                     style="@style/layout_style">
                 <Button
-                        android:id="@+id/btn_java_basics"
-                        android:text=" java基础面试知识点"
+                        android:id="@+id/btn_proxy"
+                        android:text=" 动态代理"
                         style="@style/button_style"/>
             </LinearLayout>
 

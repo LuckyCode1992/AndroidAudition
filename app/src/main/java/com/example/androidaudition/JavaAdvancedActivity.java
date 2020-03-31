@@ -1,9 +1,13 @@
 package com.example.androidaudition;
 
+import android.util.Log;
 import android.view.View;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import com.example.androidaudition.agent.Agents;
+import com.example.androidaudition.agent.Owner;
+import com.example.androidaudition.agent.Sales;
+import com.example.androidaudition.proxy.SaveInvocationHandler;
 
 public class JavaAdvancedActivity extends AppCompatActivity {
 
@@ -30,7 +34,7 @@ public class JavaAdvancedActivity extends AppCompatActivity {
          *          - 在原方法执行之前和之后做一些操作，可以用代理来实现（比如，记录log，做事务控制等）
          *          - 封装真实的主题类，将真实的业务逻辑隐藏，只暴露给调用者公共的主题接口
          *          - 在延迟加载上的应用
-         *      - 静态代理：
+         *      - 静态代理：demo 见agent
          *          - 所谓静态代理也就是在程序运行前就已经存在代理类的字节码文件
          *          - 代理类和委托类的关系在运行前就确定了
          *          - 场景demo : 一个房主要出售自己的房子，但房主不知道谁要买房，也没有时间去接待每一个看房者
@@ -56,7 +60,24 @@ public class JavaAdvancedActivity extends AppCompatActivity {
          *              - Proxy 的静态方法：
          *                  // 于获取指定代理对象所关联的调用处理器
          *                  static InvocationHandler getInvocationHandler(Object proxy)
-         *          - 使用Java 动态代理的两个重要步骤
+         *                  // 该方法用于获取关联于指定类装载器和一组接口的动态代理类的类对象
+         *                  static Class getProxyClass(ClassLoader loader, Class[] interfaces)
+         *                  // 该方法用于判断指定类对象是否是一个动态代理类
+         *                  static boolean isProxyClass(Class cl)
+         *                  // 该方法用于为指定类装载器、一组接口及调用处理器生成动态代理类实例
+         *                  static Object newProxyInstance(ClassLoader loader, Class[] interfaces,InvocationHandler h)
+         *                      loader 指定代理类的ClassLoader加载器
+         *                      interfaces 指定代理类要实现的接口
+         *                      h: 表示的是当我这个动态代理对象在调用方法的时候，会关联到哪一个InvocationHandler对象上
+         *          - 使用Java 动态代理的两个重要步骤 demo 见proxy
+         *              - 通过实现InvocationHandler 接口创建自己的调用处理器
+         *              - 通过为Proxy类的newProxyInstance方法指定代理类的ClassLoader 对象和代理要实现的interface以及调用处理器InvocationHandler对象 来创建动态代理类的对象
+         *          - 动态代理的优缺点：
+         *              - 优点：
+         *                  - 动态代理类的字节码在程序运行时由Java反射机制动态生成，无需程序员手工编写它的源代码
+         *                  - 动态代理类不仅简化了编程工作，而且提高了软件系统的可扩展性，因为Java 反射机制可以生成任意类型的动态代理类
+         *              - 缺点：
+         *                  - JDK的动态代理机制只能代理实现了接口的类，而不能实现接口的类就不能实现JDK的动态代理
          *
          */
 
@@ -66,6 +87,17 @@ public class JavaAdvancedActivity extends AppCompatActivity {
                 //顾客使用 client 使用
                 Agents agents = new Agents();
                 agents.sell();
+            }
+        });
+        findViewById(R.id.btn_proxy).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Sales delegate = new Owner();
+                Log.d("proxy_","开始创建代理");
+                Sales proxy = (Sales) new SaveInvocationHandler().bind(delegate);
+                Log.d("proxy_","代理创建完成");
+                proxy.sell();
+                Log.d("proxy_","方法执行完成");
             }
         });
     }
