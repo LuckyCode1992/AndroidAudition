@@ -2,8 +2,11 @@ package com.example.androidaudition;
 
 import android.util.Log;
 import android.view.View;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.os.Bundle;
+
 import com.example.androidaudition.agent.Agents;
 import com.example.androidaudition.agent.Owner;
 import com.example.androidaudition.agent.Sales;
@@ -93,12 +96,46 @@ public class JavaAdvancedActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Sales delegate = new Owner();
-                Log.d("proxy_","开始创建代理");
+                Log.d("proxy_", "开始创建代理");
                 Sales proxy = (Sales) new SaveInvocationHandler().bind(delegate);
-                Log.d("proxy_","代理创建完成");
+                Log.d("proxy_", "代理创建完成");
                 proxy.sell();
-                Log.d("proxy_","方法执行完成");
+                Log.d("proxy_", "方法执行完成");
             }
         });
+
+        /**
+         *  java 异常体系
+         *      - 见 throwable.png
+         *      - 基本的体系结构：
+         *          - Throwable
+         *              - Error
+         *                  - VirtualMachineError
+         *                      - StackOverFlowError
+         *                      - OutOfMemoryError
+         *                  - AWTError
+         *              - Exception
+         *                  - IOException
+         *                  - SQLException
+         *                  - RuntimeException
+         *      - 处理异常：try{} catch{}finally {}
+         */
+
+        /**
+         *  Java中实现多态的机制是什么
+         *      - java中实现多态的机制是 依靠 父类或者接口的引用 指向 子类
+         *      - 从而实现一个对象的多种形态的特性。
+         *      - 父类的引用是在程序运行时 动态 地指向具体实例
+         *      - 调用该引用的方法时，不是根据引用变量的 类型中定义的方法 来运行，而是根据具体的实例方法
+         *      - 概念：
+         *          - 多态就是指 一个引用变量 到底 指向哪个类的实例对象
+         *          - 该引用变量 发出的方法 调用哪个类中实现的方法，必须由程序运行期间才能决定
+         *          - 不修改程序代码就可以改变程序运行时所绑定的具体代码，让程序可以选择多个运行状态，这就是多态性
+         *      - 特点：
+         *          - 指向子类的父类引用 由于 向上转型 他只能访问父类中拥有的方法和属性
+         *          - 对于子类中存在 而父类中不存在的方法，该引用是不能使用的
+         *          - 若子类重写了父类中的某些方法，在调用该方法的时候，必须是使用子类定义的这些方法（动态链接，动态调用）
+         *
+         */
     }
 }
