@@ -11,6 +11,13 @@ import com.example.androidaudition.agent.Agents;
 import com.example.androidaudition.agent.Owner;
 import com.example.androidaudition.agent.Sales;
 import com.example.androidaudition.proxy.SaveInvocationHandler;
+import com.example.androidaudition.reflect.B;
+
+import java.io.File;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 public class JavaAdvancedActivity extends AppCompatActivity {
 
@@ -161,8 +168,50 @@ public class JavaAdvancedActivity extends AppCompatActivity {
          *          - 动态获取 类文件结构信息（如变量、方法等） & 调用对象的方法
          *          - 常用的需求场景有：动态代理、工厂模式优化、Java JDBC数据库操作等
          *      - 具体使用
+         *          - 反射机制提供的功能
+         *              - 运行时（动态）
+         *                  - 获取类所有成员变量和方法（包含构造方法，有参数和无参数）
+         *                  - 创建一个类对象
+         *                      - 获取对象的成员变量，并赋值
+         *                      - 调用一个对象的方法
+         *                      - 判断一个对象所属的类
+         *          - 实现手段
+         *              - java.lang.Class
+         *                  - java.lang.Class是java反射机制的基础
+         *                  - 存放着对应类型对象的 运行时信息
+         *                      - java程序运行时，java虚拟机为所有类型维护一个java.lang.Class对象
+         *                      - 该class对象存放着所有关于该对象的 运行时信息
+         *                      - 泛型形式为Class<T>
+         *                  - 每种类型的Class对象只有一个 = 地址只有一个
+         *                  - java反射机制的实现除了依靠java.lang.Class类，还需要依靠：Constructor类，Field类，Method类，分别作用于类的各个组成部分：
+         *                      - Class：类对象
+         *                      - Constructor：类的构造器对象
+         *                      - Field：类的属性对象
+         *                      - Method：类的方法对象
+         *          - 使用步骤
+         *              - 获取目标类型的Class对象
+         *              - 通过 Class 对象分别获取Constructor类对象，Method类对象，Field类对象
+         *              - 通过Constructor类对象，Method类对象，Field类对象分别获取 类的构造函数，方法，属性的具体信息，并进行后续操作
          *
          */
+        // 1. 目标类型的Class对象
+        获取目标类型的Class对象();
+        // 2.通过 Class 对象分别获取Constructor类对象，Method类对象，Field类对象
+        获取Constructor类对象和Method类对象和Field类对象();
+        // 3.通过Constructor类对象，Method类对象，Field类对象分别获取 类的构造函数，方法，属性的具体信息，并进行后续操作
+        获取类的构造方法和方法和属性进行后续操作();
+
+        // 对于2个String类型对象，它们的Class对象相同
+        Class c1 = "Carson".getClass();
+        Class c2 = null;
+        try {
+            c2 = Class.forName("java.lang.String");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        // 用==运算符实现两个类对象地址的比较
+        System.out.println(c1 == c2);
+        // 输出结果：true
 
         /**
          *
@@ -183,6 +232,155 @@ public class JavaAdvancedActivity extends AppCompatActivity {
          *
          */
 
+
+    }
+
+    private void 获取类的构造方法和方法和属性进行后续操作() {
+        Class<B> bClass = B.class;
+        try {
+            //1. 通过Constructor 类对象获取类构造函数信息
+            Constructor<B> declaredConstructor = bClass.getDeclaredConstructor(int.class);
+            Constructor<B> constructor = bClass.getConstructor();
+            // 获取构造器函数的名字
+            String name = declaredConstructor.getName();
+            Log.d("reflect_", "Constructor.name= " + name);
+            //获取一个用于描述类中定义的构造器的Class对象
+            Class<B> declaringClass = declaredConstructor.getDeclaringClass();
+            Log.d("reflect_", "Constructor.declaringClass= " + declaringClass.getName());
+            int modifiers = declaredConstructor.getModifiers();
+            int modifiers1 = constructor.getModifiers();
+            Log.d("reflect_", "Constructor.modifiers= " + modifiers);
+            Log.d("reflect_", "Constructor.modifiers1= " + modifiers1);
+            //2. 通过Field类对象获取类属性信息
+            Field field = bClass.getField("gender");
+
+
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void 获取Constructor类对象和Method类对象和Field类对象() {
+        // 即以下方法都属于`Class` 类的方法。
+        // 1.获取类的构造函数(传入构造函数的参数类型)
+        // 1.1 获取指定的构造函数（公共/继承）
+        // Constructor<T> getConstructor(Class<?>... parameterTypes)
+        Class<?> classType = String.class;
+        try {
+            classType.getConstructor(int.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        // 1.2 获取所有的构造函数（公共/继承）
+        // Constructor<?>[] getConstructors()
+        Constructor<?>[] constructors = classType.getConstructors();
+        // 1.3 获取指定的构造函数（不包含继承）
+        // Constructor<T> getDeclaredConstructor(Class<?>.. parameterTypes)
+        try {
+            classType.getDeclaredConstructor(int.class, float.class);
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        }
+        // 1.4 获取所以构造函数（不包含继承）
+        // Constructor<?>[] getDeclaredConstructors()
+        Constructor<?>[] declaredConstructors = classType.getDeclaredConstructors();
+
+        // 特别注意：
+        // 1. 不带 "Declared"的方法支持取出包括继承、公有（Public） & 不包括有（Private）的构造函数
+        // 2. 带 "Declared"的方法是支持取出包括公共（Public）、保护（Protected）、默认（包）访问和私有（Private）的构造方法，但不包括继承的构造函数
+        // 下面同理
+
+        // 2.获取类的属性（传入属性名）
+        // 2.1 获取指定的属性(公共/继承)
+        // Field getField(String name)
+        try {
+            Field age = classType.getField("age");
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+        // 2.2 获取所有的属性（公共/继承）
+        // Field[] getFields()
+        Field[] fields = classType.getFields();
+        // 2.3 获取指定的属性（不包括继承）
+        // Field getDeclaredField(String name)
+        try {
+            Field age = classType.getDeclaredField("age");
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+        // 2.4 获取所有的属性（不包括继承）
+        // Field[] getDeclaredFields()
+        Field[] declaredFields = classType.getDeclaredFields();
+
+        // 3.获取类的方法（传入方法名&参数类型）
+        // 3.1 获取指定的方法(公共/继承)
+        // Method getMethod(String name,Class<?>... parameterTypes)
+        try {
+            Method setAges = classType.getMethod("setAges", int.class, int.class, float.class);
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        }
+        // 3.2 获取所有的方法（公共/继承）
+        Method[] methods = classType.getMethods();
+        // 3.3 获取所有指定的方法（不包括继承）
+        try {
+            Method setName = classType.getDeclaredMethod("setName", String.class, char.class);
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        }
+        // 3.4 获取所有的方法（不包括继承）
+        Method[] declaredMethods = classType.getDeclaredMethods();
+
+        // 4.Class 类的其他常用方法
+        // 返回父类
+        Class<?> superclass = classType.getSuperclass();
+        // 返回完整的类名
+        String name = classType.getName();
+        // 快速创建一个类的实例
+        // 具体过程：调用默认构造器（若该类无默认构造器，则抛出异常
+        // 注：若需要为构造器提供参数需使用java.lang.reflect.Constructor中的newInstance（）
+        try {
+            Object o = classType.newInstance();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void 获取目标类型的Class对象() {
+        // 获取 目标类型的`Class`对象的方式主要有4种
+
+        // 方式1：Object.getClass()
+        // object 类中的 getClass()返回一个Class类型的实例
+        // 适用于 已经有对象了
+        Boolean isTrue = true;
+        Class<?> classType1 = isTrue.getClass();
+        Log.d("class_type", classType1.getName());
+
+        // 方式2.T.class语法
+        // T 任意java类型
+        // Class对象表示的一个类型，而这个类型未必一定是类（如int不是类，但是 int.class是一个Class类型的对象）
+        // 适用于 知道类型 A类型，B类型 String类型
+        Class<?> classType2 = Boolean.class;
+        Log.d("class_type", classType2.getName());
+
+        // 方式3.static method Class.forName("");
+        // 适用于 知道完整路径
+        try {
+            Class<?> classType3 = Class.forName("java.lang.Boolean");
+            Log.d("class_type", classType3.getName());
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        // 方式4：T.TYPE  语法
+        // 不常用
+        Class<?> classType4 = Boolean.TYPE;
+        Log.d("class_type", classType4.getName());
 
     }
 }
