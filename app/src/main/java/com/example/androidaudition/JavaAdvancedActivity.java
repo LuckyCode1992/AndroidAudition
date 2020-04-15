@@ -17,6 +17,7 @@ import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class JavaAdvancedActivity extends AppCompatActivity {
@@ -201,6 +202,11 @@ public class JavaAdvancedActivity extends AppCompatActivity {
         // 3.通过Constructor类对象，Method类对象，Field类对象分别获取 类的构造函数，方法，属性的具体信息，并进行后续操作
         获取类的构造方法和方法和属性进行后续操作();
 
+        // 实例1：利用反射获取类的属性 & 赋值
+        利用反射获取类的属性和赋值();
+        // 实例2：利用反射调用类对象的方法
+        利用反射调用类对象的方法();
+
         // 对于2个String类型对象，它们的Class对象相同
         Class c1 = "Carson".getClass();
         Class c2 = null;
@@ -235,25 +241,128 @@ public class JavaAdvancedActivity extends AppCompatActivity {
 
     }
 
+    private void 利用反射调用类对象的方法() {
+
+        try {
+            // 1. 获取B类的Class对象
+            Class bClass = B.class;
+            // 2. 通过Class对象创建实例
+            Constructor constructor = bClass.getDeclaredConstructor(double.class);
+
+            if (!constructor.isAccessible()) {
+                constructor.setAccessible(true);
+            }
+            Object bObject = constructor.newInstance(100);
+            // 3. 通过Class对象获取方法
+            Method drink = bClass.getDeclaredMethod("drink", float.class);
+            // 4. 通过Method 对象 调用 drink方法，传入需要的实例和参数值
+            if (!drink.isAccessible())
+                drink.setAccessible(true);
+            drink.invoke(bObject, 12);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void 利用反射获取类的属性和赋值() {
+
+        try {
+            // 1. 获取类的Class对象
+            Class bClass = B.class;
+            // 2. 通过 Class对象创建B类的对象（对象实例化）
+            Object bObject = bClass.newInstance();
+            // 3. 通过 Class对象 获取B类的 weight 属性
+            Field field = bClass.getDeclaredField("weight");
+            Log.d("reflect_", "field.name = " + field.getName());
+            Log.d("reflect_", "field.type = " + field.getType());
+            // 4. 查看赋予访问权限
+            if (!field.isAccessible()) {
+                field.setAccessible(true);
+            }
+            // 5. 对新创建的 B对象，设置weight 值
+            field.set(bObject, 100);
+            // 6. 获取属性值，并打印查看
+            Object weight = field.get(bObject);
+            Log.d("reflect_", "B.weight= " + weight);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     private void 获取类的构造方法和方法和属性进行后续操作() {
         Class<B> bClass = B.class;
         try {
             //1. 通过Constructor 类对象获取类构造函数信息
-            Constructor<B> declaredConstructor = bClass.getDeclaredConstructor(int.class);
-            Constructor<B> constructor = bClass.getConstructor();
+            Constructor<B> constructorPrivate = bClass.getDeclaredConstructor(int.class);
+            Constructor<B> constructorVoid = bClass.getDeclaredConstructor(String.class);
+            Constructor<B> constructorProtected = bClass.getDeclaredConstructor(double.class);
+            Constructor<B> constructorPublic = bClass.getConstructor();
             // 获取构造器函数的名字
-            String name = declaredConstructor.getName();
+            String name = constructorPrivate.getName();
             Log.d("reflect_", "Constructor.name= " + name);
             //获取一个用于描述类中定义的构造器的Class对象
-            Class<B> declaringClass = declaredConstructor.getDeclaringClass();
+            Class<B> declaringClass = constructorPrivate.getDeclaringClass();
             Log.d("reflect_", "Constructor.declaringClass= " + declaringClass.getName());
-            int modifiers = declaredConstructor.getModifiers();
-            int modifiers1 = constructor.getModifiers();
-            Log.d("reflect_", "Constructor.modifiers= " + modifiers);
-            Log.d("reflect_", "Constructor.modifiers1= " + modifiers1);
+            int modifiersPrivate = constructorPrivate.getModifiers();
+            int modifiersProtect = constructorProtected.getModifiers();
+            int modifiersVoid = constructorVoid.getModifiers();
+            int modifiersPublic = constructorPublic.getModifiers();
+            Log.d("reflect_", "Constructor.modifiersPrivate= " + modifiersPrivate);
+            Log.d("reflect_", "Constructor.modifiersProtect= " + modifiersProtect);
+            Log.d("reflect_", "Constructor.modifiersVoid= " + modifiersVoid);
+            Log.d("reflect_", "Constructor.modifiersPublic= " + modifiersPublic);
+
             //2. 通过Field类对象获取类属性信息
             Field field = bClass.getField("gender");
+            // 获取属性的名称
+            String fieldName = field.getName();
+            Log.d("reflect_", "fieldName= " + fieldName);
+            // 获取属性类型的Class对象
+            Class<?> fieldClass = field.getDeclaringClass();
+            Log.d("reflect_", "fieldClass= " + fieldClass);
+            // 获取属性类型的Class类型对象
+            Class<?> fieldType = field.getType();
+            Log.d("reflect_", "fieldType= " + fieldType);
+            // 返回整型数值，用不同的位开关描述访问修饰符的使用状况
+            int fieldModifiers = field.getModifiers();
+            Log.d("reflect_", "fieldModifiers= " + fieldModifiers);
+            // Object get(Object obj) ；// 返回指定对象上 此属性的值
+            // void set(Object obj, Object value) // 设置 指定对象上此属性的值为value
 
+            // 3. 通过Method 类对象获取类方法信息
+            // String getName()；// 获取方法名
+            // Class getDeclaringClass()；// 获取方法的Class对象
+            // int getModifiers()；// 返回整型数值，用不同的位开关描述访问修饰符的使用状况
+            // Class[] getExceptionTypes()；// 获取用于描述方法抛出的异常类型的Class对象数组
+            // Class[] getParameterTypes()；// 获取一个用于描述参数类型的Class对象数组
+
+            // 特别注意：访问权限问题
+            // 反射机制的默认行为受限于Java的访问控制
+            // 无法访问（ private ）私有的方法、字段
+            // Java安全机制只允许查看任意对象有哪些域，而不允许读它们的值
+            // 若强制读取，将抛出异常
+            // 解决方案：脱离Java程序中安全管理器的控制、屏蔽Java语言的访问检查，从而脱离访问控制
+            // 具体实现手段：使用Field类、Method类 & Constructor类对象的setAccessible()
+
+            // void setAccessible ( boolean flag)
+            // 作用：为反射对象设置可访问标志
+            // 规则：flag = true时 ，表示已屏蔽Java语言的访问检查，使得可以访问 & 修改对象的私有属性
+            // boolean isAccessible ()
+            // 返回反射对象的可访问标志的值
+            // static void setAccessible (AccessibleObject[]array,boolean flag)
+            // 设置对象数组可访问标志
 
         } catch (NoSuchMethodException e) {
             e.printStackTrace();

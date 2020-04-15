@@ -12,12 +12,12 @@ public class B extends A {
         Log.d("reflect_", "B 构造成功");
     }
 
-    private B(int age) {
+    protected B(int age) {
         this.age = age;
         Log.d("reflect_", "B 构造成功:age=" + age);
     }
 
-    private B(String gender) {
+    B(String gender) {
         this.gender = gender;
         Log.d("reflect_", "B 构造成功:gender=" + gender);
     }
