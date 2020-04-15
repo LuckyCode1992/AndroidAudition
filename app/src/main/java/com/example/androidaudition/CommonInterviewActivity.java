@@ -652,7 +652,7 @@ public class CommonInterviewActivity extends AppCompatActivity {
          *                      - START_NOT_STICKY = 2:service所在进程被kill之后，系统不再重启服务
          *                      - START_REDELIVER_INTENT = 3:系统自动重启service，并传递之前的intent
          *                      - 默认返回START_STICKY
-         *          - 2.bindService
+         *          - 2.bindService (android 8.0 后 需要使用startForegroundService方法，并开启一个Notification 否则服务会在一定时间后自动关闭)
          *              - 通过bindService绑定Service相对startService方式要复杂一点。由于bindService是异步执行的，
          *                所以需要额外构建一个ServiceConnection对象用与接收bindService的状态，同时还要指定bindService的类型。
          *              - 使用步骤：

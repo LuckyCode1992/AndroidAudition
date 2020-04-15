@@ -1,6 +1,7 @@
 package com.example.androidaudition
 
 import android.app.Activity
+import android.app.Notification
 import android.content.BroadcastReceiver
 import android.content.Intent
 import android.content.IntentFilter
@@ -122,7 +123,7 @@ class AndroidBasicActivity : AppCompatActivity() {
          *            这里需要注意，除非Service手动调用stopService()或者Service内部主动调用了stopSelf()，否则Service一直运行
          *          - 程序通过Service对外开放某些操作。通过bindService()方式与Service调用，长期连接和交互，Service生命周期和其绑定的组件相关
          *      - service 的 启动方式 注意：要在清单配置文件中 注册
-         *          - 1.startService
+         *          - 1.startService (android 8.0 后 需要使用startForegroundService方法，并开启一个Notification 否则服务会在一定时间后自动关闭)
          *              - Intent intent = new Intent(MainActivity.this, MyService.class)
          *              - startService（intent）
          *              - 注意事项
