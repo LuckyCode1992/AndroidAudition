@@ -326,8 +326,11 @@ class AndroidBasicActivity : AppCompatActivity() {
          *                          - 发送出去的广播被广播接收者按照先后顺序接收
          *                          - 有序是针对广播接收者而言的
          *                      - 广播接受者接收广播的顺序规则（同时面向静态和动态注册的广播接受者）
-         *                          - 按照Priority属性值从大-小排序
+         *                          - 按照Priority属性值从大-小排序（-1000~1000）
          *                          - Priority属性相同者，动态注册的广播优先
+         *                          - 官方文档：
+         *                            The value must be an integer, such as "100". Higher numbers have a higher priority.
+         *                            The default value is 0. The value must be greater than -1000 and less than 1000.
          *                      - 特点：
          *                          - 接收广播按顺序接收
          *                          - 先接收的广播接收者可以对广播进行截断，即后接收的广播接收者不再接收到此广播
@@ -497,10 +500,9 @@ class AndroidBasicActivity : AppCompatActivity() {
          */
 
 
-
         btn_fragment.setOnClickListener {
             val intent = Intent()
-            intent.setClass(this,FragmentDemoActivity::class.java)
+            intent.setClass(this, FragmentDemoActivity::class.java)
             startActivity(intent)
         }
 

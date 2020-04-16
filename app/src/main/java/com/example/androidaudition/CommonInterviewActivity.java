@@ -752,7 +752,7 @@ public class CommonInterviewActivity extends AppCompatActivity {
          *            需要实例化一个ArrayList或LinkedList，通俗点就是一张表、目录清单的
          *          - List接口存储是一组不唯一的，有序的对象 其中元素是可以重复的 有索引，可以很快的进行检索
          *              - ArrayList ：是底层的数据结构，使用的数组结构
-         *                  - 特点：查询的速度快，但是增删改慢，线程不同步
+         *                  - 特点：查询的速度快，但是增删慢，线程不同步
          *              - LinkedList ：使用的是链表数据结构
          *                  - 特点：增删快，但是查询速度慢
          *              - List 和 array 的区别:
