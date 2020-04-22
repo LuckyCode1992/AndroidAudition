@@ -1,74 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".JavaBasicsActivity">
-    <androidx.core.widget.NestedScrollView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        tools:context=".JavaBasicsActivity">
 
-        <LinearLayout
-            android:orientation="vertical"
+    <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-            <LinearLayout
-               style="@style/layout_style">
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+            <LinearLayout style="@style/layout_style">
+
                 <Button
-                    android:id="@+id/btn_fun_1_1"
-                    android:text="fun_1_1"
-                    style="@style/button_style"/>
+                        android:id="@+id/btn_fun_1_1"
+                        style="@style/button_style"
+                        android:text="字符串常量池" />
             </LinearLayout>
-            <LinearLayout
-                style="@style/layout_style">
+
+            <LinearLayout style="@style/layout_style">
+
                 <Button
-                    android:id="@+id/btn_fun_2_2"
-                    android:text="fun_2_2"
-                    style="@style/button_style"/>
+                        android:id="@+id/btn_fun_2_2"
+                        style="@style/button_style"
+                        android:text="软引用" />
             </LinearLayout>
-            <LinearLayout
-                style="@style/layout_style">
+
+            <LinearLayout style="@style/layout_style">
+
                 <Button
-                    android:id="@+id/btn_fun_3_1"
-                    android:text="fun_3_1"
-                    style="@style/button_style"/>
+                        android:id="@+id/btn_fun_3_1"
+                        style="@style/button_style"
+                        android:text="相同值下的 int 和 Integer 的比较结果" />
             </LinearLayout>
-            <LinearLayout
-                style="@style/layout_style">
+
+            <LinearLayout style="@style/layout_style">
+
                 <Button
-                    android:id="@+id/btn_fun_10_2"
-                    android:text="fun_10_2"
-                    style="@style/button_style"/>
+                        android:id="@+id/btn_fun_10_2"
+                        style="@style/button_style"
+                        android:text="java泛型擦除" />
             </LinearLayout>
-            <LinearLayout
-                style="@style/layout_style">
+
+            <LinearLayout style="@style/layout_style">
+
                 <Button
-                    android:id="@+id/fun_10_2_4_1"
-                    android:text="fun_10_2_4_1"
-                    style="@style/button_style"/>
+                        android:id="@+id/fun_10_2_4_1"
+                        style="@style/button_style"
+                        android:text="java泛型擦除 类型判断问题" />
             </LinearLayout>
-            <LinearLayout
-                style="@style/layout_style">
+
+            <LinearLayout style="@style/layout_style">
+
                 <Button
-                    android:id="@+id/fun_10_2_4_2"
-                    android:text="fun_10_2_4_2"
-                    style="@style/button_style"/>
+                        android:id="@+id/fun_10_2_4_2"
+                        style="@style/button_style"
+                        android:text="java泛型擦除 类型判断问题 解决方案" />
             </LinearLayout>
-            <LinearLayout
-                style="@style/layout_style">
+
+            <LinearLayout style="@style/layout_style">
+
                 <Button
-                    android:id="@+id/fun_10_2_5"
-                    android:text="fun_10_2_5"
-                    style="@style/button_style"/>
+                        android:id="@+id/fun_10_2_5"
+                        style="@style/button_style"
+                        android:text="java泛型通配符" />
             </LinearLayout>
-            <LinearLayout
-                style="@style/layout_style">
-                <Button
-                    android:id="@+id/fun_11_1"
-                    android:text="fun_11_1"
-                    style="@style/button_style"/>
-            </LinearLayout>
+
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

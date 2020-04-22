@@ -263,6 +263,31 @@ public class JavaBasicsActivity extends AppCompatActivity {
          */
 
         /**
+         * java 内部类
+         *      - 内部类 ( inner class )： 定义在另一个类中的类
+         *      - 内部类为什么存在？（内部类的作用/内部类的特点（优点方面））
+         *          - 1. 内部类方法可以访问该类定义所在作用域中的数据，包括被 private 修饰的私有数据
+         *              - 当外部类的对象创建了一个内部类的对象时，内部类对象必定会秘密捕获一个指向外部类对象的引用，
+         *              然后访问外部类的成员时，就是用那个引用来选择外围类的成员的。当然这些编辑器已经帮我们处理了
+         *              - 原因：为什么内部类可以访问外部类的数据？
+         *                  - 当外部类的对象创建内部类的对象时，内部类对象会捕获到一个指向外部类对象的引用，有了这个引用（this）就可以访问外部类对象的数据
+         *                      - 关键代码：
+         *                          - final com.xxx.xxx.Out this$0
+         *                              - 编译器会默认为成员内部类添加一个指向外部类对象的引用，就是这个this
+         *                          - public com.xxx.xxx.Out$Inner(com.xxx.xxx.Out)
+         *                              - 虽然我们在定义的内部类的构造器是无参构造器，编译器还是会默认添加一个参数，
+         *                              - 编译器会默认给内部类构造一个带外部类 类型 的一个参数的构造器
+         *                              - 所以，在创建内部类对象的时候，就将外部类的对象的指针引用，传入了内部类
+         *                              - 因此，内部类就拥有了外部类的指针引用，就可以随意访问外部类
+         *                              - 同时，间接说明成员内部类 依赖于外部类，（构造内部类，需要传入外部类的指针引用）
+         *                      - 因为 内部类在外部类中，所以符合 “同类中”的条件，又拥有外部类的引用，所以，就能访问外部类的private数据了
+         *          - 2. 内部类可以对同一包中的其他类隐藏起来
+         *          - 3. 内部类可以实现 java 单继承的缺陷
+         *          - 4. 当我们想要定义一个回调函数，却不想写大量代码的时候 我们可以选择使用匿名内部类来实现
+         */
+
+
+        /**
          *  8. JAVA 内部类
          *      8.1 内部类为什么存在
          *          - 内部类（inner class）：定义在另一个类中的类
@@ -481,19 +506,9 @@ public class JavaBasicsActivity extends AppCompatActivity {
                 //fun_10_2_5();
             }
         });
-        findViewById(R.id.fun_11_1).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                fun_11();
-            }
-        });
+
     }
 
-    void fun_11() {
-
-        Son.fun();
-        Father.fun();
-    }
 
     void fun_10_2_5() {
         List<TextView> textViews = new ArrayList<>();
@@ -572,7 +587,7 @@ public class JavaBasicsActivity extends AppCompatActivity {
 
     }
 
-
+    //软引用
     void fun_2_2() {
         SoftReference<String> softReference = new SoftReference<String>(new String("hello"));
         System.out.println(softReference.get());
@@ -580,6 +595,7 @@ public class JavaBasicsActivity extends AppCompatActivity {
         System.out.println(softReference.get());
     }
 
+    // 字符串常量池 demo
     void fun_1_1() {
         int a = 10;
         int b = 12;
