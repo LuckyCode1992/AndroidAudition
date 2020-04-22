@@ -10,6 +10,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.example.androidaudition.inner_class.InterfaceA;
+import com.example.androidaudition.inner_class.OutClass;
+import com.example.androidaudition.inner_class.PrivateInnerOutClass;
+import com.example.androidaudition.inner_class.StaticInnerOutClass;
+
 import java.lang.ref.SoftReference;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -266,7 +271,7 @@ public class JavaBasicsActivity extends AppCompatActivity {
          * java 内部类
          *      - 内部类 ( inner class )： 定义在另一个类中的类
          *      - 内部类为什么存在？（内部类的作用/内部类的特点（优点方面））
-         *          - 1. 内部类方法可以访问该类定义所在作用域中的数据，包括被 private 修饰的私有数据
+         *          - 1. 内部类方法可以访问该类定义所在作用域中的数据，包括被 private 修饰的私有数据(见OutClass)
          *              - 当外部类的对象创建了一个内部类的对象时，内部类对象必定会秘密捕获一个指向外部类对象的引用，
          *              然后访问外部类的成员时，就是用那个引用来选择外围类的成员的。当然这些编辑器已经帮我们处理了
          *              - 原因：为什么内部类可以访问外部类的数据？
@@ -282,9 +287,49 @@ public class JavaBasicsActivity extends AppCompatActivity {
          *                              - 同时，间接说明成员内部类 依赖于外部类，（构造内部类，需要传入外部类的指针引用）
          *                      - 因为 内部类在外部类中，所以符合 “同类中”的条件，又拥有外部类的引用，所以，就能访问外部类的private数据了
          *          - 2. 内部类可以对同一包中的其他类隐藏起来
+         *              - 在内部类前加上 private 这样，内部类就完全隐藏起来，其他类无法访问,但是，如果改用public修饰，能被其他类访问
+         *              - 例子：btn_inner_1 。作用就是安全。
          *          - 3. 内部类可以实现 java 单继承的缺陷
+         *              - 采用内部类继承对应的类，外部类再创建，使用内部类的方式。
+         *              - 例子见 ExtendsOutClass
          *          - 4. 当我们想要定义一个回调函数，却不想写大量代码的时候 我们可以选择使用匿名内部类来实现
+         *      - 内部类与外部类的关系
+         *          - 非静态内部类，内部类的创建，依赖 外部类 的实例对象，换言之，先有外部类对象，才能有内部类对象
+         *          - 内部类是一个相对独立的实体，外部类，是have a的关系，相当于，外部类有一个属性叫内部类
+         *      - 内部类的分类
+         *          - 静态内部类（嵌套类）
+         *          - 非静态内部类
+         *              - 成员内部类
+         *              - 方法内部类
+         *              - 匿名内部类
+         *          - 静态内部类和非静态内部类的区别
+         *              - 1. 静态内部类可以有静态成员，非静态内部类不能有静态成员
+         *              - 2. 静态内部类可以访问外部类的 静态变量 ，不可以访问外部类的 非静态变量
+         *              - 3. 非静态内部类的非静态成员 可以访问外部类的 非静态变量 和 静态变量
+         *              - 4. 静态内部类的 创建 不依赖 外部类，而非静态内部类 依赖外部类的创建
          */
+        findViewById(R.id.btn_inner_1).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PrivateInnerOutClass privateInnerOutClass = new PrivateInnerOutClass();
+                InterfaceA interfaceA = privateInnerOutClass.interfaceATest();
+                interfaceA.funA();
+            }
+        });
+        findViewById(R.id.btn_inner_2).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 非静态内部类 创建
+                StaticInnerOutClass.InnerNor innerNor = new StaticInnerOutClass().new InnerNor();
+                innerNor.nor();
+                //静态内部类创建
+                 StaticInnerOutClass.InnerStatic innerStatic = new StaticInnerOutClass.InnerStatic();
+                 innerStatic.sta();
+                 //静态内部类，静态成员调用
+                 StaticInnerOutClass.InnerStatic.sta2();
+
+            }
+        });
 
 
         /**

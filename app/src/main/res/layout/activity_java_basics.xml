@@ -71,6 +71,22 @@
                         android:text="java泛型通配符" />
             </LinearLayout>
 
+            <LinearLayout style="@style/layout_style">
+
+            <Button
+                    android:id="@+id/btn_inner_1"
+                    style="@style/button_style"
+                    android:text="private inner 测试" />
+        </LinearLayout>
+
+            <LinearLayout style="@style/layout_style">
+
+                <Button
+                        android:id="@+id/btn_inner_2"
+                        style="@style/button_style"
+                        android:text="静态，非静态内部类创建" />
+            </LinearLayout>
+
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
